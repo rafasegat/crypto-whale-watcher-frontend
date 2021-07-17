@@ -1,0 +1,7 @@
+/* ./styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "components/Logo/Logo.scss";
+@import "components/dataViz/Bubble/Bubble.scss";

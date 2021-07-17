@@ -1,0 +1,19 @@
+.dataviz-bubble-graph {
+  position: relative;
+  .bubbles {
+    stroke-width: 2px;
+    stroke: white;
+  }
+  .bubbles:hover {
+    stroke: black;
+  }
+  .svg-injected {
+    overflow: visible;
+  }
+}
+
+.bubble-graph-tooltip {
+  position: absolute;
+  width: 300px;
+  font-size: 12px;
+}
