@@ -13,7 +13,6 @@ type Props = {
 const Bubble: FC<Props> = ({ id, data }: Props) => {
   const refBubbleGraph = useRef();
   const [svg, setSvg] = useState(null);
-  const [typeSelected, setTypeSelected] = useState("");
 
   // set the dimensions and margins of the graph
   const margin = { top: 10, right: 20, bottom: 30, left: 50 },
@@ -98,7 +97,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
                     )} ago<br>`;
       tooltip.style("opacity", 1).html(html);
     };
-    const moveTooltip = function (event, d) {
+    const moveTooltip = function (event, d: TypeTransaction) {
       tooltip
         .style("left", event.x + 50 + "px")
         .style("top", event.y + 50 + "px");
@@ -120,22 +119,15 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
       // update circle position
       svg
         .selectAll("dot")
-        .attr("cx", function (d) {
+        .attr("cx", function (d: TypeTransaction) {
           return newX(d.timestamp);
         })
-        .attr("cy", function (d) {
+        .attr("cy", function (d: TypeTransaction) {
           return newY(d.amount);
         });
     }
 
-    var zoom = d3
-      .zoom()
-      .scaleExtent([0.5, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
-      .extent([
-        [0, 0],
-        [width, height],
-      ])
-      .on("zoom", updateChart);
+    var zoom = d3.zoom();
 
     // Add dots
     svg
@@ -154,28 +146,22 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         if (d.type === "unknown_to_wallet") return "#C3423F";
         if (d.type === "unknown_to_unknown") return "#404E4D";
       })
-      .call(zoom)
       // -3- Trigger the functions
       .on("mouseover", showTooltip)
       .on("mousemove", moveTooltip)
-      .on("mouseleave", hideTooltip);
-    svg.call(zoom);
-  }, [data, typeSelected]);
+      .on("mouseleave", hideTooltip)
+      .call(
+        d3.zoom().on("zoom", function (event) {
+          console.log(event);
+          svg.attr("transform", event.transform);
+        })
+      );
+  }, [data]);
 
   // if (!data.length) return <div>Loading bubbles...</div>;
 
   return (
     <div className="dataviz-bubble-graph">
-      <select
-        value={typeSelected}
-        onChange={(event: string) => setTypeSelected(event.target.value)}
-      >
-        <option value="exchange_to_unknown">Exchange to Wallet</option>
-        <option value="unknown_to_unknown">Exchange to Wallet</option>
-        <option value="unknown_to_unknown">Unknown to Unknown</option>
-        <option value="unknown_to_unknown">Exchange to Exchange</option>
-      </select>
-      {typeSelected}
       <div ref={refBubbleGraph}></div>
     </div>
   );

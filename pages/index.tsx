@@ -27,25 +27,33 @@ declare global {
 
 export default function Home() {
   const [ethTransactions, setEthTransactions] = useState<TypeTransaction[]>([]);
-  const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  // const [maticTransactions, setBtcTransactions] = useState<TypeTransaction[]>(
+  //   []
+  // );
+  // const [xrpTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
 
   useState(() => {
     // Ethereum
+    console.log("Fetching ETH transactions....");
     getTransactions("eth", (data: TypeTransaction[]) => {
       const formattedData = data.map((transaction) => {
         transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
         return transaction;
       });
+      console.log(formattedData);
       setEthTransactions(formattedData);
     });
     // Bitcoin
-    getTransactions("btc", (data: TypeTransaction[]) => {
-      const formattedData = data.map((transaction) => {
-        transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
-        return transaction;
-      });
-      setBtcTransactions(formattedData);
-    });
+    //   getTransactions("btc", (data: TypeTransaction[]) => {
+    //     const formattedData = data.map((transaction) => {
+    //       transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
+    //       return transaction;
+    //     });
+    //     setBtcTransactions(formattedData);
+    //   });
   }, []);
 
   return (
@@ -60,16 +68,10 @@ export default function Home() {
         <Container>
           <Row className="eth-section" alignItemsCenter>
             <Column>
-              Ethereum
-              <Bubble id="eth" data={btcTransactions} />
+              {/* <Filters /> */}
+              <Bubble id="eth" data={ethTransactions} />
             </Column>
           </Row>
-          {/* <Row className="eth-section" alignItemsCenter>
-            <Column>
-              Bitcoin
-              <Bubble id="eth" data={btcTransactions} />
-            </Column>
-          </Row> */}
         </Container>
       </main>
       <Footer />

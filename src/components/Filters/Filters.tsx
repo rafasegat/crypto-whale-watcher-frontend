@@ -8,7 +8,7 @@ const Header: FC = () => {
     <header>
       <Container>
         <Row alignItemsCenter>
-          <Column size="w-1/3 ">vdvfdvfdfd</Column>
+          <Column size="w-1/4">Type Transaction</Column>
         </Row>
       </Container>
     </header>

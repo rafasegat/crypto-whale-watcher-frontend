@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FC, useEffect, useState } from 'react';
-import './Radio.scss';
+import React, { FC, useEffect, useState } from "react";
+import "./Radio.scss";
 
 type RadioObject = { value: string | number; label: string };
-const defaultRadioObject: RadioObject = { value: '', label: '' };
+const defaultRadioObject: RadioObject = { value: "", label: "" };
 type RadioValue = string | number | RadioObject;
 
 type Props = {
@@ -12,22 +12,22 @@ type Props = {
   value?: RadioValue;
   options: RadioValue[];
   onChange?: (value: RadioValue) => void;
-  displayDirection?: 'vertical' | 'horizontal';
+  displayDirection?: "vertical" | "horizontal";
 };
 const defaultProps: Partial<Props> = {
-  value: '',
+  value: "",
   onChange: () => {},
-  displayDirection: 'horizontal'
+  displayDirection: "horizontal",
 };
 
 const Radio: FC<Props> = (props: Props) => {
   const {
     id,
     label,
-    value = '',
+    value = "",
     options,
     onChange = () => {},
-    displayDirection
+    displayDirection,
   } = props;
   const [localValue, setLocalValue] = useState<RadioValue>(value);
 
@@ -44,7 +44,7 @@ const Radio: FC<Props> = (props: Props) => {
   );
 
   useEffect(() => {
-    if (localValue === '' && options.length) {
+    if (localValue === "" && options.length) {
       const initValue = getOptions(options)[0];
       onRadioChange(initValue);
     }
@@ -91,13 +91,13 @@ const Radio: FC<Props> = (props: Props) => {
 };
 
 Radio.defaultProps = defaultProps;
-Radio.displayName = 'Radio';
+Radio.displayName = "Radio";
 export default Radio;
 
 function getOptionValue(option: RadioValue): RadioObject {
   let optionLabel: string;
   let optionValue: string | number;
-  if (typeof option === 'object') {
+  if (typeof option === "object") {
     optionLabel = (option as RadioObject).label;
     optionValue = (option as RadioObject).value;
   } else {
