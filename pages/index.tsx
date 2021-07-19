@@ -71,7 +71,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Whale Watcher</title>
+        <title>Watch The Whale - Whale Crypto Tracker</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
@@ -80,7 +80,7 @@ export default function Home() {
         <Container>
           <Row className="eth-section" alignItemsCenter>
             <Column>
-              <Filters typeTransactionsSelected={typeTransactionsSelected} />
+              {/* <Filters typeTransactionsSelected={typeTransactionsSelected} /> */}
               <Bubble id="eth" data={ethTransactions} />
             </Column>
           </Row>

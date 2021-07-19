@@ -38,8 +38,6 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     const amountMin = d3.min(data, (t: TypeTransaction) => t.amount);
     const amountMax = d3.max(data, (t: TypeTransaction) => t.amount);
 
-    console.log(dateMin, dateMax, amountMin, amountMax);
-
     // Add X axis
     const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
 
