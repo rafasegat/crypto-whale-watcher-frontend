@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { FC, useEffect, useState } from "react";
-import "./Radio.scss";
 
 type RadioObject = { value: string | number; label: string };
 const defaultRadioObject: RadioObject = { value: "", label: "" };

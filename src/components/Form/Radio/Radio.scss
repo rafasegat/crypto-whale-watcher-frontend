@@ -1,11 +1,6 @@
-@import '../../../assets/styles/variables.scss';
-
 .datandis-radio {
   display: flex;
   flex-direction: column;
-  > label {
-    margin-bottom: $formLabelMarginBottom;
-  }
   .datandis-radio-options {
     display: flex;
     flex-direction: row;
@@ -15,7 +10,7 @@
       align-items: center;
       cursor: pointer;
       margin: 0 8px 8px 0;
-      input[type='radio'] {
+      input[type="radio"] {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
@@ -27,14 +22,14 @@
         border-radius: 50%;
         cursor: inherit;
       }
-      input[type='radio']:checked::before {
-        content: '';
+      input[type="radio"]:checked::before {
+        content: "";
         position: absolute;
         top: 2px;
         left: 2px;
         width: 14px;
         height: 14px;
-        background-color: $purple;
+        background-color: orange;
         border-radius: 50%;
         cursor: inherit;
       }

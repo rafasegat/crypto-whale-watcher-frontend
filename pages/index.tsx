@@ -1,10 +1,11 @@
 import Head from "next/head";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../src/components/Header/Header";
 import Footer from "../src/components/Footer/Footer";
 import Column from "../src/components/Layout/Column";
 import Container from "../src/components/Layout/Container";
 import Row from "../src/components/Layout/Row";
+import Filters from "components/Filters/Filters";
 import Bubble from "components/DataViz/Bubble/Bubble";
 import { getTransactions } from "rest/endpoints";
 
@@ -35,6 +36,9 @@ export default function Home() {
   // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
   // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
 
+  // Filters
+  const [typeTransactionsSelected, setTypeTransactionsSelected] = useState("");
+
   useState(() => {
     // Ethereum
     console.log("Fetching ETH transactions....");
@@ -56,6 +60,14 @@ export default function Home() {
     //   });
   }, []);
 
+  useEffect(() => {
+    setEthTransactions(
+      ethTransactions.filter(
+        (transaction) => transaction.type === typeTransactionsSelected
+      )
+    );
+  }, [typeTransactionsSelected]);
+
   return (
     <>
       <Head>
@@ -68,11 +80,12 @@ export default function Home() {
         <Container>
           <Row className="eth-section" alignItemsCenter>
             <Column>
-              {/* <Filters /> */}
+              <Filters typeTransactionsSelected={typeTransactionsSelected} />
               <Bubble id="eth" data={ethTransactions} />
             </Column>
           </Row>
         </Container>
+        {typeTransactionsSelected}
       </main>
       <Footer />
     </>

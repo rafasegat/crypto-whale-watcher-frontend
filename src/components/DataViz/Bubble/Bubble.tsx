@@ -43,8 +43,8 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     // Add X axis
     const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
 
-    const customFormat = (e) =>
-      `${formatDistanceToNowStrict(new Date(e * 1000))} ago`;
+    const customFormat = (timestamp: number) =>
+      `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`;
 
     svg
       .append("g")
