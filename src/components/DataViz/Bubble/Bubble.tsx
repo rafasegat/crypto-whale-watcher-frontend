@@ -15,7 +15,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
   const [svg, setSvg] = useState<any>(null);
 
   // set the dimensions and margins of the graph
-  const margin = { top: 10, right: 20, bottom: 30, left: 50 },
+  const margin = { top: 10, right: 20, bottom: 30, left: 100 },
     width = 1200 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -41,14 +41,17 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
 
     // Add X axis
     const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
-
-    const customFormat = (timestamp: number) =>
-      `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`;
-
-    svg
+    const xAxis = svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(x).tickFormat(customFormat));
+      .call(
+        d3
+          .axisBottom(x)
+          .tickFormat(
+            (timestamp: number) =>
+              `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`
+          )
+      );
 
     // Add Y axis
     const y = d3
@@ -56,10 +59,10 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
       .domain([amountMin, amountMax])
       .range([height, 0]);
 
-    svg.append("g").call(d3.axisLeft(y));
+    const yAxis = svg.append("g").call(d3.axisLeft(y));
 
     // Add a scale for bubble size
-    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 40]);
+    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 10]);
 
     // -1- Create a tooltip div that is hidden by default:
     const tooltip = d3
@@ -75,8 +78,8 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     // -2- Create 3 functions to show / update (when mouse move but stay on same circle) / hide the tooltip
     const showTooltip = (event: any, transaction: TypeTransaction) => {
       tooltip.transition().duration(200);
-      const html = `Blockchain: ${transaction.blockchain} <br>
-                    Symbol: ${transaction.symbol} <br>
+      const html = `Blockchain: ${transaction.blockchain.toUpperCase()} <br>
+                    Symbol: ${transaction.symbol.toUpperCase()} <br>
                     Amount: ${transaction.amount}${transaction.symbol} - ${
         transaction.amount_usd
       }USD <br>
@@ -94,7 +97,11 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
                       new Date(transaction.timestamp * 1000),
                       {}
                     )} ago<br>`;
-      tooltip.style("opacity", 1).html(html);
+      tooltip
+        .style("opacity", 1)
+        .style("visibility", "visible")
+        .style("z-index", "1")
+        .html(html);
     };
     const moveTooltip = function (event, d: TypeTransaction) {
       tooltip
@@ -102,39 +109,80 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         .style("top", event.y + 50 + "px");
     };
     const hideTooltip = function () {
-      tooltip.transition().duration(200).style("opacity", 0);
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+        .style("visibility", "hidden")
+        .style("z-index", "-1");
     };
 
+    // Add a clipPath: everything out of this area won't be drawn.
+    var clip = svg
+      .append("defs")
+      .append("SVG:clipPath")
+      .attr("id", "clip")
+      .append("SVG:rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("x", 0)
+      .attr("y", 0);
+
     // A function that updates the chart when the user zoom and thus new boundaries are available
-    function updateChart(event: any) {
+    const updateChart = (event: any) => {
       // recover the new scale
       var newX = event.transform.rescaleX(x);
       var newY = event.transform.rescaleY(y);
 
       // update axes with these new boundaries
-      x.call(d3.axisBottom(newX));
-      y.call(d3.axisLeft(newY));
+      xAxis.call(
+        d3
+          .axisBottom(newX)
+          .tickFormat(
+            (timestamp: number) =>
+              `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`
+          )
+      );
+      yAxis.call(d3.axisLeft(newY));
 
       // update circle position
       svg
-        .selectAll("dot")
+        .selectAll("circle")
         .attr("cx", function (d: TypeTransaction) {
           return newX(d.timestamp);
         })
         .attr("cy", function (d: TypeTransaction) {
           return newY(d.amount);
         });
-    }
-
-    var zoom = d3.zoom();
-
-    // Add dots
+    };
+    // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.5, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", updateChart);
+    // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
     svg
-      .append("g")
-      .selectAll("dot")
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(zoom);
+
+    // Create the scatter variable: where both the circles and the brush take place
+    var scatter = svg.append("g").attr("clip-path", "url(#clip)");
+
+    // Add circles
+    scatter
+      .selectAll("circle")
       .data(data)
-      .join("circle")
-      .attr("class", "bubbles")
+      .enter()
+      .append("circle")
       .attr("cx", (d: any) => x(d.timestamp))
       .attr("cy", (d: any) => y(d.amount))
       .attr("r", (d: any) => z(d.amount))
@@ -145,16 +193,10 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         if (d.type === "unknown_to_wallet") return "#C3423F";
         if (d.type === "unknown_to_unknown") return "#404E4D";
       })
-      // -3- Trigger the functions
+      .style("opacity", 0.9)
       .on("mouseover", showTooltip)
       .on("mousemove", moveTooltip)
-      .on("mouseleave", hideTooltip)
-      .call(
-        d3.zoom().on("zoom", function (event) {
-          console.log(event);
-          svg.attr("transform", event.transform);
-        })
-      );
+      .on("mouseleave", hideTooltip);
   }, [data]);
 
   // if (!data.length) return <div>Loading bubbles...</div>;

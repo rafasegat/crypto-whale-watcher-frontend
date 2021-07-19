@@ -47,7 +47,7 @@ export default function Home() {
         transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
         return transaction;
       });
-      console.log(formattedData);
+      console.log(`Fetched ${formattedData.length} results.`);
       setEthTransactions(formattedData);
     });
     // Bitcoin
