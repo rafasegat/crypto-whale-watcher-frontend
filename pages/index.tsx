@@ -58,7 +58,7 @@ export default function Home() {
     //     });
     //     setBtcTransactions(formattedData);
     //   });
-  }, []);
+  });
 
   useEffect(() => {
     setEthTransactions(
