@@ -12,7 +12,7 @@ type Props = {
 
 const Bubble: FC<Props> = ({ id, data }: Props) => {
   const refBubbleGraph = useRef();
-  const [svg, setSvg] = useState(null);
+  const [svg, setSvg] = useState<any>(null);
 
   // set the dimensions and margins of the graph
   const margin = { top: 10, right: 20, bottom: 30, left: 50 },
@@ -32,13 +32,12 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!svg) return;
+    if (!svg || typeof svg === "undefined") return;
+
     const dateMin = d3.min(data, (t: TypeTransaction) => t.timestamp);
     const dateMax = d3.max(data, (t: TypeTransaction) => t.timestamp);
     const amountMin = d3.min(data, (t: TypeTransaction) => t.amount);
     const amountMax = d3.max(data, (t: TypeTransaction) => t.amount);
-
-    console.log(dateMin, dateMax, amountMin, amountMax);
 
     // Add X axis
     const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
@@ -107,7 +106,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     };
 
     // A function that updates the chart when the user zoom and thus new boundaries are available
-    function updateChart(event) {
+    function updateChart(event: any) {
       // recover the new scale
       var newX = event.transform.rescaleX(x);
       var newY = event.transform.rescaleY(y);

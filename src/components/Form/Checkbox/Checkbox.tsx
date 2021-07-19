@@ -1,15 +1,13 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FC, useEffect, useState } from 'react';
-import BaseIcon from '../../Icons/BaseIcon';
-import Button from '../../Button/Button';
-import './CheckboxGroup.scss';
+import React, { FC, useEffect, useState } from "react";
+import "./CheckboxGroup.scss";
 
-const SELECT_ALL_VALUE = '***';
+const SELECT_ALL_VALUE = "***";
 
 type CheckboxObject = { [x: string]: any };
-const defaultCheckboxObject = { value: '', label: '' };
+const defaultCheckboxObject = { value: "", label: "" };
 type CheckboxValue = string | number | CheckboxObject;
 
 type Props = {
@@ -22,35 +20,35 @@ type Props = {
   onChange?: (value: CheckboxValue[]) => void;
   required?: boolean;
   allowSelectAll?: boolean;
-  displayDirection?: 'vertical' | 'horizontal';
+  displayDirection?: "vertical" | "horizontal";
 };
 const defaultGetOptionLabel = (option) => {
-  if (typeof option === 'object') {
+  if (typeof option === "object") {
     return option.label;
   }
   return option;
 };
 const defaultGetOptionValue = (option) => {
-  if (typeof option === 'object') {
+  if (typeof option === "object") {
     return option.value;
   }
   return option;
 };
 
 const defaultProps: Partial<Props> = {
-  label: '',
+  label: "",
   value: [],
   getOptionValue: defaultGetOptionValue,
   getOptionLabel: defaultGetOptionLabel,
   onChange: () => {},
   required: false,
   allowSelectAll: false,
-  displayDirection: 'vertical'
+  displayDirection: "vertical",
 };
 
 const CheckboxGroup: FC<Props> = ({
   name,
-  label = '',
+  label = "",
   value = [],
   options,
   getOptionValue = defaultGetOptionValue,
@@ -58,32 +56,32 @@ const CheckboxGroup: FC<Props> = ({
   onChange = () => {},
   required = false,
   allowSelectAll = false,
-  displayDirection = 'vertical'
+  displayDirection = "vertical",
 }: Props) => {
   const id = `checkbox_${name}`;
   const [localValue, setLocalValue] = useState<CheckboxValue[]>(value);
 
   const getLabel = () => {
-    if (typeof label === 'function') {
+    if (typeof label === "function") {
       return label(localValue);
     }
     return label;
   };
   const localGetOptionValue = (option: CheckboxValue) => {
-    if (typeof option === 'object' && option.value === SELECT_ALL_VALUE) {
+    if (typeof option === "object" && option.value === SELECT_ALL_VALUE) {
       return option.value;
     }
     return getOptionValue(option);
   };
   const localGetOptionLabel = (option: CheckboxValue) => {
-    if (typeof option === 'object' && option.value === SELECT_ALL_VALUE) {
+    if (typeof option === "object" && option.value === SELECT_ALL_VALUE) {
       const allSelected = localValue.length === options.length;
-      return allSelected ? 'Deselect all' : 'Select all';
+      return allSelected ? "Deselect all" : "Select all";
     }
     return getOptionLabel(option);
   };
   const getIsChecked = (option: CheckboxValue) => {
-    if (typeof option === 'object' && option.value === SELECT_ALL_VALUE) {
+    if (typeof option === "object" && option.value === SELECT_ALL_VALUE) {
       return localValue.length === options.length;
     }
     return !!getCheckboxValues(localValue, false).find(
@@ -97,7 +95,7 @@ const CheckboxGroup: FC<Props> = ({
     for (let i = 0; i < checkboxes.length; i++) {
       (checkboxes[i] as HTMLInputElement).required = setRequired;
       (checkboxes[i] as HTMLInputElement).setCustomValidity(
-        setRequired ? 'Please select at least one value' : ''
+        setRequired ? "Please select at least one value" : ""
       );
     }
   };
@@ -145,10 +143,9 @@ const CheckboxGroup: FC<Props> = ({
 
           return isSelectAll ? (
             <div className="checkbox-group-select-all">
-              <Button
+              <button
                 key={`checkbox-group-${id}-select-all`}
-                ariaLabel="Select / Deselect all"
-                size="sm"
+                aria-label="Select / Deselect all"
                 onClick={() =>
                   onChangeCheckbox(
                     localGetOptionValue(option).toString(),
@@ -157,12 +154,12 @@ const CheckboxGroup: FC<Props> = ({
                 }
               >
                 {localGetOptionLabel(option)}
-              </Button>
+              </button>
             </div>
           ) : (
             <li
               key={`checkbox-group-${id}-${localGetOptionValue(option)}`}
-              className={`${isChecked ? 'is-checked' : 'not-checked'}`}
+              className={`${isChecked ? "is-checked" : "not-checked"}`}
             >
               <input
                 type="checkbox"
@@ -177,16 +174,16 @@ const CheckboxGroup: FC<Props> = ({
                   onChangeCheckbox(event.target.value, isChecked);
                 }}
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter')
+                  if (event.key === "Enter")
                     onChangeCheckbox(
                       localGetOptionValue(option).toString(),
                       isChecked
                     );
                 }}
               />
-              <span className="fake-input">
+              {/* <span className="fake-input">
                 <BaseIcon icon="check" viewBox="15" size="15" />
-              </span>
+              </span> */}
               <label htmlFor={checkboxId}>
                 <span>{localGetOptionLabel(option)}</span>
               </label>
@@ -198,7 +195,7 @@ const CheckboxGroup: FC<Props> = ({
   );
 };
 
-CheckboxGroup.displayName = 'CheckboxGroup';
+CheckboxGroup.displayName = "CheckboxGroup";
 CheckboxGroup.defaultProps = defaultProps;
 export default CheckboxGroup;
 

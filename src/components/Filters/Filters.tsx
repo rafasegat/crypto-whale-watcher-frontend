@@ -8,9 +8,9 @@ type Props = {
   typeTransactionsSelected: string;
 };
 
-const Filters: FC = ({ typeTransactionsSelected }: Props) => {
+const Filters: FC<Props> = ({ typeTransactionsSelected }: Props) => {
   return (
-    <header>
+    <div>
       <Container>
         <Row alignItemsCenter>
           <Column size="w-1/4">
@@ -27,7 +27,7 @@ const Filters: FC = ({ typeTransactionsSelected }: Props) => {
           </Column>
         </Row>
       </Container>
-    </header>
+    </div>
   );
 };
 
