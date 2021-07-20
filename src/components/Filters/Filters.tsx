@@ -27,7 +27,7 @@ const Filters: FC<Props> = ({
                 { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
                 { label: "Wallet -> Wallet", value: "unknown_to_unknown" },
               ]}
-              onChange={(value) => setTypeTransactionsSelected(value.value)}
+              onChange={(item: any) => setTypeTransactionsSelected(item.value)}
             />
           </Column>
         </Row>
