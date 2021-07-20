@@ -73,12 +73,7 @@ export default function Home() {
           <Row className="eth-section" alignItemsCenter>
             <Column>
               {typeTransactionsSelected}
-              {/* <Filters
-                typeTransactionsSelected={typeTransactionsSelected}
-                setTypeTransactionsSelected={(value) =>
-                  setTypeTransactionsSelected(value)
-                }
-              /> */}
+              {/* <Filter */}
               <Bubble
                 id="eth"
                 data={filter(ethTransactions)}
