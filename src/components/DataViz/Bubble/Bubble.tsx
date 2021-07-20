@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { format, formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { types } from "util";
 // import * as d3 from "d3";
 
@@ -8,9 +8,17 @@ const d3 = require("d3");
 type Props = {
   id: string;
   data: TypeTransaction[];
+  typeTransactionsSelected: string;
 };
 
-const Bubble: FC<Props> = ({ id, data }: Props) => {
+const formatDate = (timestamp) => {
+  return formatDistanceToNow(timestamp * 1000, {
+    includeSeconds: true,
+    addSuffix: true,
+  });
+};
+
+const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
   const refBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
 
@@ -36,8 +44,12 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
 
     const dateMin = d3.min(data, (t: TypeTransaction) => t.timestamp);
     const dateMax = d3.max(data, (t: TypeTransaction) => t.timestamp);
-    const amountMin = d3.min(data, (t: TypeTransaction) => t.amount);
-    const amountMax = d3.max(data, (t: TypeTransaction) => t.amount);
+    const amountMin = d3.min(data, (t: TypeTransaction) =>
+      parseFloat(t.amount)
+    );
+    const amountMax = d3.max(data, (t: TypeTransaction) =>
+      parseFloat(t.amount)
+    );
 
     // Add X axis
     const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
@@ -47,12 +59,8 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
       .call(
         d3
           .axisBottom(x)
-          .tickFormat(
-            (timestamp: number) =>
-              `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`
-          )
+          .tickFormat((timestamp: number) => `${formatDate(timestamp)}`)
       );
-
     // Add Y axis
     const y = d3
       .scaleLinear()
@@ -83,20 +91,17 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
                     Amount: ${transaction.amount}${transaction.symbol} - ${
         transaction.amount_usd
       }USD <br>
-                    From: ${transaction.from.address} ${
-        transaction.from.owner_type === "exchange"
-          ? transaction.from.owner
-          : transaction.from.owner_type
+                    From: ${transaction.from_address} ${
+        transaction.from_owner_type === "exchange"
+          ? transaction.from_owner
+          : transaction.from_owner_type
       }<br>
-      To: ${transaction.to.address} ${
-        transaction.to.owner_type === "exchange"
-          ? transaction.to.owner
-          : transaction.to.owner_type
+      To: ${transaction.to_address} ${
+        transaction.to_owner_type === "exchange"
+          ? transaction.to_owner
+          : transaction.to_owner_type
       }<br>
-                    ${formatDistanceToNowStrict(
-                      new Date(transaction.timestamp * 1000),
-                      {}
-                    )} ago<br>`;
+                    ${formatDate(transaction.timestamp)}<br>`;
       tooltip
         .style("opacity", 1)
         .style("visibility", "visible")
@@ -118,7 +123,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     };
 
     // Add a clipPath: everything out of this area won't be drawn.
-    var clip = svg
+    svg
       .append("defs")
       .append("SVG:clipPath")
       .attr("id", "clip")
@@ -138,10 +143,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
       xAxis.call(
         d3
           .axisBottom(newX)
-          .tickFormat(
-            (timestamp: number) =>
-              `${formatDistanceToNowStrict(new Date(timestamp * 1000))} ago`
-          )
+          .tickFormat((timestamp: number) => `${formatDate(timestamp)}`)
       );
       yAxis.call(d3.axisLeft(newY));
 
@@ -152,9 +154,10 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
           return newX(d.timestamp);
         })
         .attr("cy", function (d: TypeTransaction) {
-          return newY(d.amount);
+          return newY(parseFloat(d.amount));
         });
     };
+
     // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
     const zoom = d3
       .zoom()
@@ -164,6 +167,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         [width, height],
       ])
       .on("zoom", updateChart);
+
     // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
     svg
       .append("rect")
@@ -174,29 +178,34 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
       // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
       .call(zoom);
 
-    // Create the scatter variable: where both the circles and the brush take place
-    var scatter = svg.append("g").attr("clip-path", "url(#clip)");
+    const update = () => {
+      // Create the scatter variable: where both the circles and the brush take place
+      var scatter = svg.append("g").attr("clip-path", "url(#clip)");
 
-    // Add circles
-    scatter
-      .selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", (d: any) => x(d.timestamp))
-      .attr("cy", (d: any) => y(d.amount))
-      .attr("r", (d: any) => z(d.amount))
-      .style("fill", (d: any) => {
-        if (d.type === "exchange_to_exchange") return "#5BC0EB";
-        if (d.type === "unknown_to_exchange") return "#FDE74C";
-        if (d.type === "exchange_to_unknown") return "#9BC53D";
-        if (d.type === "unknown_to_wallet") return "#C3423F";
-        if (d.type === "unknown_to_unknown") return "#404E4D";
-      })
-      .style("opacity", 0.9)
-      .on("mouseover", showTooltip)
-      .on("mousemove", moveTooltip)
-      .on("mouseleave", hideTooltip);
+      // Add circles
+      scatter
+        .selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", (d: any) => x(d.timestamp))
+        .attr("cy", (d: any) => y(parseFloat(d.amount)))
+        .attr("r", (d: any) => z(parseFloat(d.amount)))
+        .attr("class", "bubble")
+        .style("fill", (d: any) => {
+          if (d.type === "exchange_to_exchange") return "#5BC0EB";
+          if (d.type === "unknown_to_exchange") return "#FDE74C";
+          if (d.type === "exchange_to_unknown") return "#9BC53D";
+          if (d.type === "unknown_to_wallet") return "#C3423F";
+          if (d.type === "unknown_to_unknown") return "#404E4D";
+        })
+        .style("opacity", 0.9)
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip);
+    };
+    console.log(data);
+    update();
   }, [data]);
 
   // if (!data.length) return <div>Loading bubbles...</div>;

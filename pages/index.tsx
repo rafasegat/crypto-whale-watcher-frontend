@@ -11,17 +11,22 @@ import { getTransactions } from "rest/endpoints";
 
 declare global {
   type TypeTransaction = {
+    id: number;
+    id_external: number;
     blockchain: string;
     symbol: string;
-    id: string;
     transaction_type: string;
     hash: string;
-    type: string; // walletToExchange | exchangeToWallet | walletToWallet
-    from: any;
-    to: any;
+    type: string;
+    from_address: string;
+    from_owner: string;
+    from_owner_type: string;
+    to_address: string;
+    to_owner: string;
+    to_owner_type: string;
     timestamp: number;
-    amount: number;
-    amount_usd: number;
+    amount: string;
+    amount_usd: string;
     transaction_count: number;
   };
 }
@@ -42,31 +47,18 @@ export default function Home() {
   useState(() => {
     // Ethereum
     console.log("Fetching ETH transactions....");
-    getTransactions("eth", (data: TypeTransaction[]) => {
-      const formattedData = data.map((transaction) => {
-        transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
-        return transaction;
-      });
-      console.log(`Fetched ${formattedData.length} results.`);
-      setEthTransactions(formattedData);
-    });
-    // Bitcoin
-    //   getTransactions("btc", (data: TypeTransaction[]) => {
-    //     const formattedData = data.map((transaction) => {
-    //       transaction.type = `${transaction.from.owner_type}_to_${transaction.to.owner_type}`;
-    //       return transaction;
-    //     });
-    //     setBtcTransactions(formattedData);
-    //   });
+    getTransactions("eth", (data: TypeTransaction[]) =>
+      setEthTransactions(data)
+    );
   });
 
-  useEffect(() => {
-    setEthTransactions(
-      ethTransactions.filter(
-        (transaction) => transaction.type === typeTransactionsSelected
-      )
+  const filter = () => {
+    return ethTransactions.filter((transaction) =>
+      typeTransactionsSelected
+        ? transaction.type === typeTransactionsSelected
+        : true
     );
-  }, [typeTransactionsSelected]);
+  };
 
   return (
     <>
@@ -80,8 +72,18 @@ export default function Home() {
         <Container>
           <Row className="eth-section" alignItemsCenter>
             <Column>
-              {/* <Filters typeTransactionsSelected={typeTransactionsSelected} /> */}
-              <Bubble id="eth" data={ethTransactions} />
+              {typeTransactionsSelected}
+              {/* <Filters
+                typeTransactionsSelected={typeTransactionsSelected}
+                setTypeTransactionsSelected={(value) =>
+                  setTypeTransactionsSelected(value)
+                }
+              /> */}
+              <Bubble
+                id="eth"
+                data={filter(ethTransactions)}
+                typeTransactionsSelected={typeTransactionsSelected}
+              />
             </Column>
           </Row>
         </Container>
