@@ -76,7 +76,7 @@ export default function Home() {
               {/* <Filter */}
               <Bubble
                 id="eth"
-                data={filter(ethTransactions)}
+                data={filter()}
                 typeTransactionsSelected={typeTransactionsSelected}
               />
             </Column>
