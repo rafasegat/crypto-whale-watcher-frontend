@@ -6,9 +6,13 @@ import Radio from "components/Form/Radio/Radio";
 
 type Props = {
   typeTransactionsSelected: string;
+  setTypeTransactionsSelected: (value: string) => void;
 };
 
-const Filters: FC<Props> = ({ typeTransactionsSelected }: Props) => {
+const Filters: FC<Props> = ({
+  typeTransactionsSelected,
+  setTypeTransactionsSelected,
+}: Props) => {
   return (
     <div>
       <Container>
@@ -23,6 +27,7 @@ const Filters: FC<Props> = ({ typeTransactionsSelected }: Props) => {
                 { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
                 { label: "Wallet -> Wallet", value: "unknown_to_unknown" },
               ]}
+              onChange={(value) => setTypeTransactionsSelected(value.value)}
             />
           </Column>
         </Row>

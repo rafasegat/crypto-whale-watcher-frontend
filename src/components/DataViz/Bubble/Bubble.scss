@@ -1,8 +1,15 @@
 .dataviz-bubble-graph {
   position: relative;
+  cursor: grab;
   .bubbles {
     stroke-width: 2px;
     stroke: white;
+  }
+  circle.bubble {
+    cursor: pointer;
+    &:hover {
+      stroke: red;
+    }
   }
   .bubbles:hover {
     stroke: black;
