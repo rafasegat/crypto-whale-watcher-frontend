@@ -42,6 +42,7 @@ export default function Home() {
   // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
 
   // Filters
+  const [symbolSelected, setSymbolSelected] = useState("");
   const [typeTransactionsSelected, setTypeTransactionsSelected] = useState("");
 
   useState(() => {
@@ -54,7 +55,7 @@ export default function Home() {
 
   const filter = () => {
     return ethTransactions.filter((transaction) =>
-      typeTransactionsSelected
+      typeTransactionsSelected && typeTransactionsSelected !== "all"
         ? transaction.type === typeTransactionsSelected
         : true
     );
@@ -70,10 +71,18 @@ export default function Home() {
       <Header />
       <main className="h-screen">
         <Container>
-          <Row className="eth-section" alignItemsCenter>
-            <Column>
-              {typeTransactionsSelected}
-              {/* <Filter */}
+          <Row className="eth-section">
+            <Column size="w-1/6">
+              <Filters
+                symbolSelected={symbolSelected}
+                setSymbolSelected={setSymbolSelected}
+                typeTransactionsSelected={typeTransactionsSelected}
+                setTypeTransactionsSelected={(value) =>
+                  setTypeTransactionsSelected(value)
+                }
+              />
+            </Column>
+            <Column size="w-5/6">
               <Bubble
                 id="eth"
                 data={filter()}
@@ -82,7 +91,6 @@ export default function Home() {
             </Column>
           </Row>
         </Container>
-        {typeTransactionsSelected}
       </main>
       <Footer />
     </>

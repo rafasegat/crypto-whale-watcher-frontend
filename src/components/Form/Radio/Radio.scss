@@ -1,6 +1,9 @@
 .datandis-radio {
   display: flex;
   flex-direction: column;
+  & > label {
+    @apply text-sm font-bold mb-4;
+  }
   .datandis-radio-options {
     display: flex;
     flex-direction: row;
@@ -34,6 +37,7 @@
         cursor: inherit;
       }
       label {
+        @apply text-sm;
         padding-left: 8px;
         cursor: inherit;
       }

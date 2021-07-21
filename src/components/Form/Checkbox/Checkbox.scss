@@ -1,110 +1,105 @@
-// @import '../../../assets/styles/variables.scss';
+.datandis-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  ul.checkbox-group-list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    list-style: none;
+    li {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      margin-bottom: 5px;
+      input.input-native {
+        flex: 0 0 auto;
+        overflow: visible;
+        margin: 0;
+        width: 24px;
+        height: 24px;
+        z-index: 10;
+        opacity: 0;
+        cursor: pointer;
+      }
+      input.input-native:focus + .fake-input {
+        box-shadow: none !important;
+        outline: 2px solid #333 !important;
+        outline-offset: 2px;
+      }
+      input[type="checkbox"]:checked + .fake-input {
+        svg {
+          opacity: 1;
+        }
+      }
+      .fake-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border: 2px solid gray;
+        background: #ffffff;
+        margin-right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 3px;
+        z-index: 9;
+        svg {
+          opacity: 0;
+          fill: gray;
+        }
+      }
+      label {
+        width: 100%;
+        font-size: 13px;
+        padding-left: 10px;
+        margin-right: 8px;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        line-height: 22px;
+      }
+    }
+    .checkbox-group-select-all {
+      margin-top: 10px;
+      justify-content: flex-start;
+      align-self: baseline;
+      button {
+        color: inherit;
+        border-color: inherit;
+        padding: 5px;
+        &:hover {
+          border-color: inherit;
+          font-weight: inherit;
+          background-color: inherit;
+          text-decoration: underline;
+        }
+      }
+    }
+    &.direction-horizontal {
+      flex-direction: row;
+      .checkbox-group-select-all {
+        flex: 1 1 100%;
+      }
+    }
+  }
+}
 
-// .datandis-checkbox-group {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: baseline;
-//   label {
-//     margin-bottom: $formLabelMarginBottom;
-//   }
-//   ul.checkbox-group-list {
-//     display: flex;
-//     flex-direction: column;
-//     flex-wrap: wrap;
-//     margin: 0;
-//     padding: 0;
-//     width: 100%;
-//     list-style: none;
-//     li {
-//       display: flex;
-//       align-items: flex-start;
-//       position: relative;
-//       margin-bottom: 5px;
-//       input.input-native {
-//         flex: 0 0 auto;
-//         overflow: visible;
-//         margin: 0;
-//         width: 24px;
-//         height: 24px;
-//         z-index: 10;
-//         opacity: 0;
-//         cursor: pointer;
-//       }
-//       input.input-native:focus + .fake-input {
-//         box-shadow: none !important;
-//         outline: 2px solid #333 !important;
-//         outline-offset: 2px;
-//       }
-//       input[type='checkbox']:checked + .fake-input {
-//         svg {
-//           opacity: 1;
-//         }
-//       }
-//       .fake-input {
-//         position: absolute;
-//         left: 0;
-//         top: 0;
-//         width: 20px;
-//         height: 20px;
-//         border: 2px solid $gray800;
-//         background: #ffffff;
-//         margin-right: 10px;
-//         display: flex;
-//         justify-content: center;
-//         align-items: center;
-//         border-radius: 3px;
-//         z-index: 9;
-//         svg {
-//           opacity: 0;
-//           fill: $gray800;
-//         }
-//       }
-//       label {
-//         width: 100%;
-//         font-size: 13px;
-//         padding-left: 10px;
-//         margin-right: 8px;
-//         position: relative;
-//         cursor: pointer;
-//         display: flex;
-//         align-items: center;
-//         margin-bottom: 0;
-//         line-height: 22px;
-//       }
-//     }
-//     .checkbox-group-select-all {
-//       margin-top: 10px;
-//       justify-content: flex-start;
-//       align-self: baseline;
-//       button {
-//         color: inherit;
-//         border-color: inherit;
-//         padding: 5px;
-//         &:hover {
-//           border-color: inherit;
-//           font-weight: inherit;
-//           background-color: inherit;
-//           text-decoration: underline;
-//         }
-//       }
-//     }
-//     &.direction-horizontal {
-//       flex-direction: row;
-//       .checkbox-group-select-all {
-//         flex: 1 1 100%;
-//       }
-//     }
-//   }
-// }
+.is-scrollable {
+  max-height: 400px;
+  overflow-y: auto;
+}
 
-// .is-scrollable {
-//   max-height: 400px;
-//   overflow-y: auto;
-// }
-
-// @media only screen and (max-width: 991px) {
-//   .is-scrollable {
-//     max-height: inherit !important;
-//     overflow-y: inherit !important;
-//   }
-// }
+@media only screen and (max-width: 991px) {
+  .is-scrollable {
+    max-height: inherit !important;
+    overflow-y: inherit !important;
+  }
+}
