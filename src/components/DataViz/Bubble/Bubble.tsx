@@ -15,31 +15,49 @@ const formatDate = (timestamp) => {
   return formatDistanceToNow(timestamp * 1000, {
     includeSeconds: true,
     addSuffix: true,
-  });
+  }).replace("about", "");
 };
 
 const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
-  const refBubbleGraph = useRef();
+  const refSVGBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
 
   // set the dimensions and margins of the graph
-  const margin = { top: 10, right: 20, bottom: 30, left: 100 },
+  const margin = { top: 10, right: 20, bottom: 100, left: 80 },
     width = 1200 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+  // component did mount, initialize svg
   useEffect(() => {
+    // create SVG
     const elSVG = d3
-      .select(refBubbleGraph.current)
-      .append("svg")
+      .select(refSVGBubbleGraph.current)
       .attr("class", `svg-injected svg-injected-${id}`)
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
+    elSVG.append("rect").attr("class", "rect-overlay");
+    elSVG.append("g").attr("class", "x-axis");
+    elSVG.append("g").attr("class", "y-axis");
+    elSVG.append("g").attr("class", "scatter");
+
+    // Add a clipPath: everything out of this area won't be drawn.
+    elSVG
+      .append("defs")
+      .append("SVG:clipPath")
+      .attr("id", "clip")
+      .append("SVG:rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("x", 0)
+      .attr("y", 0);
+
     setSvg(elSVG);
   }, []);
 
   useEffect(() => {
+    console.log(svg);
     if (!svg || typeof svg === "undefined") return;
 
     const dateMin = d3.min(data, (t: TypeTransaction) => t.timestamp);
@@ -52,14 +70,14 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
     );
 
     // Add X axis
-    const x = d3.scaleLinear().domain([dateMin, dateMax]).range([0, width]);
+    const x = d3.scaleTime().domain([dateMin, dateMax]).range([0, width]);
     const xAxis = svg
-      .append("g")
+      .select(".x-axis")
       .attr("transform", `translate(0, ${height})`)
       .call(
         d3
           .axisBottom(x)
-          .tickFormat((timestamp: number) => `${formatDate(timestamp)}`)
+          .tickFormat((timestamp: number) => formatDate(timestamp))
       );
     // Add Y axis
     const y = d3
@@ -67,10 +85,10 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
       .domain([amountMin, amountMax])
       .range([height, 0]);
 
-    const yAxis = svg.append("g").call(d3.axisLeft(y));
+    const yAxis = svg.select(".y-axis").call(d3.axisLeft(y));
 
     // Add a scale for bubble size
-    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 10]);
+    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 20]);
 
     // -1- Create a tooltip div that is hidden by default:
     const tooltip = d3
@@ -122,18 +140,8 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
         .style("z-index", "-1");
     };
 
-    // Add a clipPath: everything out of this area won't be drawn.
-    svg
-      .append("defs")
-      .append("SVG:clipPath")
-      .attr("id", "clip")
-      .append("SVG:rect")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("x", 0)
-      .attr("y", 0);
-
-    // A function that updates the chart when the user zoom and thus new boundaries are available
+    // A function that updates the chart when the
+    // user zoom and thus new boundaries are available
     const updateChart = (event: any) => {
       // recover the new scale
       var newX = event.transform.rescaleX(x);
@@ -143,19 +151,15 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
       xAxis.call(
         d3
           .axisBottom(newX)
-          .tickFormat((timestamp: number) => `${formatDate(timestamp)}`)
+          .tickFormat((timestamp: number) => formatDate(timestamp))
       );
       yAxis.call(d3.axisLeft(newY));
 
       // update circle position
       svg
         .selectAll("circle")
-        .attr("cx", function (d: TypeTransaction) {
-          return newX(d.timestamp);
-        })
-        .attr("cy", function (d: TypeTransaction) {
-          return newY(parseFloat(d.amount));
-        });
+        .attr("cx", (d: TypeTransaction) => newX(d.timestamp))
+        .attr("cy", (d: TypeTransaction) => newY(parseFloat(d.amount)));
     };
 
     // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
@@ -170,7 +174,7 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
 
     // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
     svg
-      .append("rect")
+      .select(".rect-overlay")
       .attr("width", width)
       .attr("height", height)
       .style("fill", "none")
@@ -180,12 +184,12 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
 
     const update = () => {
       // Create the scatter variable: where both the circles and the brush take place
-      var scatter = svg.append("g").attr("clip-path", "url(#clip)");
+      var scatter = svg.select(".scatter").attr("clip-path", "url(#clip)");
 
-      // Add circles
-      scatter
-        .selectAll("circle")
-        .data(data)
+      const allBubbles = scatter.selectAll("circle").data(data);
+      // Enter new bubbles
+
+      allBubbles
         .enter()
         .append("circle")
         .attr("cx", (d: any) => x(d.timestamp))
@@ -193,16 +197,53 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
         .style("fill", (d: any) => {
+          if (d.type === "exchange_to_exchange") return "#5BC0EB4d";
+          if (d.type === "unknown_to_exchange") return "#FDE74C4d";
+          if (d.type === "exchange_to_unknown") return "#9BC53D4d";
+          if (d.type === "unknown_to_wallet") return "#C3423F4d";
+          if (d.type === "unknown_to_unknown") return "#404E4D4d";
+        })
+        .style("stroke", (d: any) => {
           if (d.type === "exchange_to_exchange") return "#5BC0EB";
           if (d.type === "unknown_to_exchange") return "#FDE74C";
           if (d.type === "exchange_to_unknown") return "#9BC53D";
           if (d.type === "unknown_to_wallet") return "#C3423F";
           if (d.type === "unknown_to_unknown") return "#404E4D";
         })
-        .style("opacity", 0.9)
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip);
+
+      allBubbles
+        // x axis
+        .transition()
+        .duration(500)
+        .attr("cx", (d: any) => x(d.timestamp))
+        // y axis
+        // .transition()
+        // .duration(500)
+        .attr("cy", (d: any) => y(parseFloat(d.amount)))
+        // r axis
+        .transition()
+        .duration(200)
+        .attr("r", (d: any) => z(parseFloat(d.amount)))
+        .attr("class", "bubble")
+        .style("fill", (d: any) => {
+          if (d.type === "exchange_to_exchange") return "#5BC0EB4d";
+          if (d.type === "unknown_to_exchange") return "#FDE74C4d";
+          if (d.type === "exchange_to_unknown") return "#9BC53D4d";
+          if (d.type === "unknown_to_wallet") return "#C3423F4d";
+          if (d.type === "unknown_to_unknown") return "#404E4D4d";
+        })
+        .style("stroke", (d: any) => {
+          if (d.type === "exchange_to_exchange") return "#5BC0EB";
+          if (d.type === "unknown_to_exchange") return "#FDE74C";
+          if (d.type === "exchange_to_unknown") return "#9BC53D";
+          if (d.type === "unknown_to_wallet") return "#C3423F";
+          if (d.type === "unknown_to_unknown") return "#404E4D";
+        });
+
+      allBubbles.exit().remove();
     };
     console.log(data);
     update();
@@ -212,7 +253,7 @@ const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
 
   return (
     <div className="dataviz-bubble-graph">
-      <div ref={refBubbleGraph}></div>
+      <svg ref={refSVGBubbleGraph} />
     </div>
   );
 };

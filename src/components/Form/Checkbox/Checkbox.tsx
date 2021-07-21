@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { FC, useEffect, useState } from "react";
-import "./CheckboxGroup.scss";
 
 const SELECT_ALL_VALUE = "***";
 
