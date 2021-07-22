@@ -33,31 +33,45 @@ declare global {
 
 export default function Home() {
   const [ethTransactions, setEthTransactions] = useState<TypeTransaction[]>([]);
-  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
-  // const [maticTransactions, setBtcTransactions] = useState<TypeTransaction[]>(
-  //   []
-  // );
-  // const [xrpTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
-  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
-  // const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  const [btcTransactions, setBtcTransactions] = useState<TypeTransaction[]>([]);
+  const [othersTransactions, setOthersTransactions] = useState<
+    TypeTransaction[]
+  >([]);
+  const [usdTransactions, setUsdTransactions] = useState<TypeTransaction[]>([]);
 
   // Filters
-  const [symbolSelected, setSymbolSelected] = useState("");
-  const [typeTransactionsSelected, setTypeTransactionsSelected] = useState("");
+  const [symbolSelected, setSymbolSelected] = useState<string>("btc");
+  const [typeSelected, setTypeSelected] = useState<string[]>([
+    "unknown_to_exchange",
+    "exchange_to_unknown",
+  ]);
+  const [periodSelected, setPeriodSelected] = useState<string>("");
 
   useState(() => {
-    // Ethereum
-    console.log("Fetching ETH transactions....");
+    getTransactions("btc", (data: TypeTransaction[]) =>
+      setBtcTransactions(data)
+    );
     getTransactions("eth", (data: TypeTransaction[]) =>
       setEthTransactions(data)
     );
+    getTransactions("others", (data: TypeTransaction[]) =>
+      setOthersTransactions(data)
+    );
+    getTransactions("usd", (data: TypeTransaction[]) =>
+      setUsdTransactions(data)
+    );
   });
-
   const filter = () => {
-    return ethTransactions.filter((transaction) =>
-      typeTransactionsSelected && typeTransactionsSelected !== "all"
-        ? transaction.type === typeTransactionsSelected
-        : true
+    if (!symbolSelected) return;
+    const symbolData = {
+      btc: btcTransactions,
+      eth: ethTransactions,
+      others: othersTransactions,
+      usd: usdTransactions,
+    };
+    return symbolData[symbolSelected].filter((transaction) =>
+      // type transaction
+      typeSelected.length ? typeSelected.includes(transaction.type) : true
     );
   };
 
@@ -67,29 +81,36 @@ export default function Home() {
         <title>Watch The Whale - Whale Crypto Tracker</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-DFVQZY68WF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-DFVQZY68WF');
+        </script> */}
       </Head>
       <Header />
       <main className="h-screen">
         <Container>
           <Row className="eth-section">
-            <Column size="w-1/6">
+            <Column size="w-full md:w-1/6">
               <Filters
                 symbolSelected={symbolSelected}
-                setSymbolSelected={setSymbolSelected}
-                typeTransactionsSelected={typeTransactionsSelected}
-                setTypeTransactionsSelected={(value) =>
-                  setTypeTransactionsSelected(value)
-                }
+                setSymbolSelected={(value: string) => setSymbolSelected(value)}
+                typeSelected={typeSelected}
+                setTypeSelected={(value: string[]) => setTypeSelected(value)}
               />
             </Column>
-            <Column size="w-5/6">
-              <Bubble
-                id="eth"
-                data={filter()}
-                typeTransactionsSelected={typeTransactionsSelected}
-              />
+            <Column size="w-full md:w-5/6">
+              <Bubble id="eth" data={filter()} />
             </Column>
           </Row>
+          <img
+            src="https://alternative.me/crypto/fear-and-greed-index.png"
+            alt="Latest Crypto Fear & Greed Index"
+          />
         </Container>
       </main>
       <Footer />

@@ -8,7 +8,6 @@ const d3 = require("d3");
 type Props = {
   id: string;
   data: TypeTransaction[];
-  typeTransactionsSelected: string;
 };
 
 const formatDate = (timestamp) => {
@@ -18,13 +17,13 @@ const formatDate = (timestamp) => {
   }).replace("about", "");
 };
 
-const Bubble: FC<Props> = ({ id, data, typeTransactionsSelected }: Props) => {
+const Bubble: FC<Props> = ({ id, data }: Props) => {
   const refSVGBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
 
   // set the dimensions and margins of the graph
   const margin = { top: 10, right: 20, bottom: 100, left: 80 },
-    width = 1200 - margin.left - margin.right,
+    width = 826 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
   // component did mount, initialize svg

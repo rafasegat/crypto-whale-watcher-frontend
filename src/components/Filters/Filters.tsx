@@ -1,58 +1,45 @@
 import React, { FC } from "react";
 import Radio from "components/Form/Radio/Radio";
-// import Checkbox from "components/Form/Checkbox/Checkbox";
+import Checkbox from "components/Form/Checkbox/Checkbox";
 
 type Props = {
   symbolSelected: string;
   setSymbolSelected: (value: string) => void;
-  typeTransactionsSelected: string;
-  setTypeTransactionsSelected: (value: string) => void;
+  typeSelected: string[];
+  setTypeSelected: (value: string[]) => void;
 };
 
 const Filters: FC<Props> = ({
   symbolSelected,
   setSymbolSelected,
-  typeTransactionsSelected,
-  setTypeTransactionsSelected,
+  typeSelected,
+  setTypeSelected,
 }: Props) => {
   return (
     <div>
       <h3 className="font-bold mb-5">Filters</h3>
       <div>
-        {/* <Checkbox
+        <Radio
           id="symbol"
-          label="Symbol"
-          value={typeTransactionsSelected}
+          label="Currency"
+          value={symbolSelected}
           displayDirection="vertical"
           options={[
-            { label: "All", value: "all" },
-            { label: "Wallet -> Exchange", value: "unknown_to_exchange" },
-            { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
-            { label: "Wallet -> Wallet", value: "unknown_to_unknown" },
-            {
-              label: "Exchange -> Exchange",
-              value: "exchange_to_exchange",
-            },
-            {
-              label: "Unknown -> Other",
-              value: "unknown_to_other",
-            },
-            {
-              label: "Other -> Unknown",
-              value: "other_to_unknown",
-            },
+            { label: "Bitcoin", value: "btc" },
+            { label: "Ethereum", value: "eth" },
+            { label: "Others", value: "others" },
+            { label: "USD", value: "usd" },
           ]}
-          onChange={(item: any) => setTypeTransactionsSelected(item.value)}
-        /> */}
+          onChange={(item: any) => setSymbolSelected(item.value)}
+        />
       </div>
       <div>
-        <Radio
-          id="type-transaction"
-          label="Type Transaction"
-          value={typeTransactionsSelected}
+        <Checkbox
+          id="symbol"
+          label="Symbol"
+          value={typeSelected}
           displayDirection="vertical"
           options={[
-            { label: "All", value: "all" },
             { label: "Wallet -> Exchange", value: "unknown_to_exchange" },
             { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
             { label: "Wallet -> Wallet", value: "unknown_to_unknown" },
@@ -69,7 +56,10 @@ const Filters: FC<Props> = ({
               value: "other_to_unknown",
             },
           ]}
-          onChange={(item: any) => setTypeTransactionsSelected(item.value)}
+          onChange={(items: any) => {
+            console.log(items.map((item) => item.value));
+            setTypeSelected(items.map((item) => item.value));
+          }}
         />
       </div>
     </div>
