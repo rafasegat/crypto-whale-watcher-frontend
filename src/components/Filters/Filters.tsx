@@ -38,7 +38,6 @@ const Filters: FC<Props> = ({
           id="symbol"
           label="Symbol"
           value={typeSelected}
-          displayDirection="vertical"
           options={[
             { label: "Wallet -> Exchange", value: "unknown_to_exchange" },
             { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
@@ -56,9 +55,9 @@ const Filters: FC<Props> = ({
               value: "other_to_unknown",
             },
           ]}
-          onChange={(items: any) => {
-            console.log(items.map((item) => item.value));
-            setTypeSelected(items.map((item) => item.value));
+          onChange={(items: string[]) => {
+            console.log(items);
+            setTypeSelected(items);
           }}
         />
       </div>

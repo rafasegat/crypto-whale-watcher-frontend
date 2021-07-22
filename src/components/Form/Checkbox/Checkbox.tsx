@@ -1,69 +1,74 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FC } from 'react';
-import BaseIcon from '../../Icons/BaseIcon';
-import './CheckboxGroup.scss';
+import React, { FC } from "react";
+
+type typeOption = {
+  label: string;
+  value: string;
+};
 
 type Props = {
-  optionsSelected: string[];
-  options: string[];
+  id: string;
+  label: string;
+  value: string[];
+  options: typeOption[];
   onChange: (value: string[]) => void;
 };
 
 const CheckboxGroup: FC<Props> = ({
-  optionsSelected,
+  id,
+  label,
+  value,
   options,
-  onChange
+  onChange,
 }: Props) => {
-  const id = `checkbox_${Math.random().toString(36).substr(2, 9)}`;
+  const builtInID = `checkbox_${id}`;
 
-  const onChangeCheckbox = (value: string) => {
-    let cloneOptionsSelected = optionsSelected;
+  const onChangeCheckbox = (optionSelected: string) => {
+    let cloneOptionsSelected = value;
     // exists
-    if (cloneOptionsSelected.indexOf(value) > -1)
+    if (cloneOptionsSelected.indexOf(optionSelected) > -1)
       cloneOptionsSelected = cloneOptionsSelected.filter(
-        (item) => item !== value
+        (item) => item !== optionSelected
       );
-    else cloneOptionsSelected.push(value);
+    else cloneOptionsSelected.push(optionSelected);
     onChange([...cloneOptionsSelected]);
   };
 
   return (
-    <ul className="checkbox-group-list">
-      {options.map((option) => {
-        const checkboxId = `checkbox_${Math.random()
-          .toString(36)
-          .substr(2, 9)}`;
-        const isChecked = optionsSelected.indexOf(option) > -1;
-        return (
-          <li
-            key={option}
-            className={`${isChecked ? 'is-checked' : 'not-checked'}`}
-          >
-            <input
-              type="checkbox"
-              id={checkboxId}
-              name={id}
-              value={option}
-              tabIndex={0}
-              checked={optionsSelected.indexOf(option) > -1}
-              aria-checked={optionsSelected.indexOf(option) > -1}
-              onChange={(event) => onChangeCheckbox(event.target.value)}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') onChangeCheckbox(option);
-              }}
-            />
-            <label htmlFor={checkboxId}>
-              <span className="fake-input">
-                <BaseIcon icon="check" viewBox="15" size="15" />
-              </span>
-              <span>{option}</span>
-            </label>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="checkbox">
+      {label && <label>{label}</label>}
+      <ul className="checkbox-group-list">
+        {options.map((option) => {
+          const checkboxId = `checkbox-${builtInID}-${option.value}`;
+          const isChecked = value.indexOf(option.value) > -1;
+          return (
+            <li
+              key={`checkbox-item-${option.value}-${builtInID}`}
+              className={`${isChecked ? "is-checked" : "not-checked"}`}
+            >
+              <input
+                type="checkbox"
+                id={checkboxId}
+                value={option.value}
+                tabIndex={0}
+                checked={value.indexOf(option.value) > -1}
+                aria-checked={value.indexOf(option.value) > -1}
+                onChange={(event) => onChangeCheckbox(event.target.value)}
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") onChangeCheckbox(option.value);
+                }}
+              />
+              <label htmlFor={checkboxId}>
+                <span className="fake-input"></span>
+                <span>{option.label}</span>
+              </label>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 
