@@ -1,6 +1,8 @@
 .checkbox {
+  display: flex;
+  flex-direction: column;
   & > label {
-    @apply text-sm font-bold mb-3;
+    @apply text-sm font-bold mb-2;
   }
 
   ul.checkbox-group-list {
@@ -35,8 +37,7 @@
         }
       }
       label {
-        width: 100%;
-        font-size: 13px;
+        @apply w-full text-xs;
         padding: 5px 0;
         padding-left: 30px;
         position: relative;

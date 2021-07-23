@@ -22,7 +22,7 @@ const Filters: FC<Props> = ({
   return (
     <div>
       {/* <h3 className="font-bold mb-5">Filters</h3> */}
-      <div>
+      <div className="mb-2 pb-2 border-b border-gray-200">
         <Radio
           id="symbol"
           label="Currency"
@@ -37,35 +37,51 @@ const Filters: FC<Props> = ({
           onChange={(item: any) => setSymbolSelected(item.value)}
         />
       </div>
-      <div>
+      <div className="mb-2 pb-2 border-b border-gray-200">
         <Checkbox
           id="symbol"
           label="Symbol"
           value={typeSelected}
           options={[
-            { label: "Wallet -> Exchange", value: "unknown_to_exchange" },
-            { label: "Exchange -> Wallet", value: "exchange_to_unknown" },
-            { label: "Wallet -> Wallet", value: "unknown_to_unknown" },
             {
-              label: "Exchange -> Exchange",
+              label: "Wallet → Exchange",
+              description:
+                "It usually means the person wants to sell it. Dump is coming. :(",
+              value: "unknown_to_exchange",
+            },
+            {
+              label: "Exchange → Wallet",
+              description:
+                "It usually means the person bought and wants to hold it.",
+              value: "exchange_to_unknown",
+            },
+            {
+              label: "Wallet → Wallet",
+              description: "",
+              value: "unknown_to_unknown",
+            },
+            {
+              label: "Exchange → Exchange",
+              description: "",
               value: "exchange_to_exchange",
             },
             {
-              label: "Unknown -> Other",
+              label: "Unknown → Other",
+              description: "",
               value: "unknown_to_other",
             },
             {
-              label: "Other -> Unknown",
+              label: "Other → Unknown",
+              description: "",
               value: "other_to_unknown",
             },
           ]}
           onChange={(items: string[]) => {
-            console.log(items);
             setTypeSelected(items);
           }}
         />
       </div>
-      <div>
+      <div className="mb-2 pb-2 border-b border-gray-200">
         <Radio
           id="period"
           label="Period"

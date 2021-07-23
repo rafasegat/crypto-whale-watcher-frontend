@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../src/components/Header/Header";
 import Footer from "../src/components/Footer/Footer";
 import Column from "../src/components/Layout/Column";
@@ -29,7 +29,29 @@ declare global {
     amount_usd: string;
     transaction_count: number;
   };
+  type TypeFilter = {
+    symbol: string;
+    period: number;
+  };
 }
+
+const getTimestamp = (periodSelected) => {
+  const timeNow = parseInt(Date.now().toString().substr(0, 10));
+  const oneHour = 3600;
+  const oneDay = oneHour * 24;
+  switch (periodSelected) {
+    case "one_hour":
+      return timeNow - oneHour;
+    case "four_hours":
+      return timeNow - oneHour * 4;
+    case "one_day":
+      return timeNow - oneDay;
+    case "one_week":
+      return timeNow - oneDay * 7;
+    case "one_month":
+      return timeNow - oneDay * 30;
+  }
+};
 
 export default function Home() {
   const [ethTransactions, setEthTransactions] = useState<TypeTransaction[]>([]);
@@ -39,29 +61,58 @@ export default function Home() {
   >([]);
   const [usdTransactions, setUsdTransactions] = useState<TypeTransaction[]>([]);
 
+  // Sizing
+  const [widthScreen, setWidthScreen] = useState(600);
+  // const [heightScreen, setHeightScreen] = useState(600);
+
   // Filters
   const [symbolSelected, setSymbolSelected] = useState<string>("btc");
   const [typeSelected, setTypeSelected] = useState<string[]>([
     "unknown_to_exchange",
     "exchange_to_unknown",
   ]);
-  const [periodSelected, setPeriodSelected] = useState<string>("");
+  const [periodSelected, setPeriodSelected] = useState<string>("one_day");
 
   useState(() => {
-    getTransactions("btc", (data: TypeTransaction[]) =>
-      setBtcTransactions(data)
+    getTransactions(
+      { symbol: "btc", period: getTimestamp(periodSelected || "one_day") },
+      (data: TypeTransaction[]) => setBtcTransactions(data)
     );
-    getTransactions("eth", (data: TypeTransaction[]) =>
-      setEthTransactions(data)
+    getTransactions(
+      { symbol: "eth", period: getTimestamp(periodSelected || "one_day") },
+      (data: TypeTransaction[]) => setEthTransactions(data)
     );
-    getTransactions("others", (data: TypeTransaction[]) =>
-      setOthersTransactions(data)
+    getTransactions(
+      { symbol: "others", period: getTimestamp(periodSelected || "one_day") },
+      (data: TypeTransaction[]) => setOthersTransactions(data)
     );
-    getTransactions("usd", (data: TypeTransaction[]) =>
-      setUsdTransactions(data)
+    getTransactions(
+      { symbol: "usd", period: getTimestamp(periodSelected || "one_day") },
+      (data: TypeTransaction[]) => setUsdTransactions(data)
     );
+    const handleResizeEvent = () => {
+      let resizeTimer;
+      const handleResize = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          setWidthScreen(window.innerWidth);
+          // setHeightScreen(window.innerHeight);
+        }, 300);
+      };
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    };
+    if (typeof window !== "undefined") {
+      setWidthScreen(window.innerWidth);
+      // setHeightScreen(window.innerHeight);
+      handleResizeEvent();
+    }
   });
-  const filter = () => {
+
+  const filterData = () => {
     if (!symbolSelected) return;
     const symbolData = {
       btc: btcTransactions,
@@ -69,10 +120,19 @@ export default function Home() {
       others: othersTransactions,
       usd: usdTransactions,
     };
-    return symbolData[symbolSelected].filter((transaction) =>
-      // type transaction
-      typeSelected.length ? typeSelected.includes(transaction.type) : true
-    );
+    const timestampPeriodSelected = getTimestamp(periodSelected);
+    return symbolData[symbolSelected].filter((transaction) => {
+      const filteredData =
+        // type transaction
+        (typeSelected.length
+          ? typeSelected.includes(transaction.type)
+          : true) &&
+        // period
+        (periodSelected
+          ? transaction.timestamp > timestampPeriodSelected
+          : true);
+      return filteredData;
+    });
   };
 
   return (
@@ -100,9 +160,9 @@ export default function Home() {
       </Head>
       <Header />
       <main className="h-screen">
-        <Container>
-          <Row className="mt-10">
-            <Column size="w-full md:w-1/6">
+        <Container isFull>
+          <Row className="mt-5">
+            <Column size="w-full md:w-60 md:flex-none">
               <Filters
                 symbolSelected={symbolSelected}
                 setSymbolSelected={(value: string) => setSymbolSelected(value)}
@@ -112,8 +172,8 @@ export default function Home() {
                 setPeriodSelected={(value: string) => setPeriodSelected(value)}
               />
             </Column>
-            <Column size="w-full md:w-5/6">
-              <Bubble id="eth" data={filter()} />
+            <Column size="w-full">
+              <Bubble id="eth" data={filterData()} widthScreen={widthScreen} />
               <img
                 src="https://alternative.me/crypto/fear-and-greed-index.png"
                 alt="Latest Crypto Fear & Greed Index"

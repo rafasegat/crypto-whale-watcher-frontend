@@ -1,20 +1,20 @@
 import React, { FC, useEffect, useState, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { types } from "util";
-// import * as d3 from "d3";
-
 const d3 = require("d3");
 
 type Props = {
   id: string;
   data: TypeTransaction[];
+  widthScreen: number;
 };
 
 const formatDate = (timestamp) => {
   return formatDistanceToNow(timestamp * 1000, {
     includeSeconds: true,
-    addSuffix: true,
-  }).replace("about", "");
+    addSuffix: false,
+  })
+    .replace("about", "")
+    .replace(" hours", "h");
 };
 
 const bubbleColors = {
@@ -26,17 +26,17 @@ const bubbleColors = {
   pink: "#F487B6",
 };
 
-const Bubble: FC<Props> = ({ id, data }: Props) => {
+const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
   const refSVGBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
 
-  // set the dimensions and margins of the graph
-  const margin = { top: 10, right: 20, bottom: 100, left: 80 },
-    width = 826 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
-
   // component did mount, initialize svg
   useEffect(() => {
+    // set the dimensions and margins of the graph
+    const margin = { top: 10, right: 20, bottom: 100, left: 80 },
+      width = widthScreen - 280 - margin.left - margin.right,
+      height = 685 - margin.top - margin.bottom;
+
     // create SVG
     const elSVG = d3
       .select(refSVGBubbleGraph.current)
@@ -65,8 +65,17 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
   }, []);
 
   useEffect(() => {
-    console.log(svg);
     if (!svg || typeof svg === "undefined") return;
+
+    // set the dimensions and margins of the graph
+    const margin = { top: 10, right: 20, bottom: 100, left: 80 },
+      width = widthScreen - 280 - margin.left - margin.right,
+      height = 685 - margin.top - margin.bottom;
+
+    // resize width
+    svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
 
     const dateMin = d3.min(data, (t: TypeTransaction) => t.timestamp);
     const dateMax = d3.max(data, (t: TypeTransaction) => t.timestamp);
@@ -243,15 +252,15 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
 
       allBubbles.exit().remove();
     };
-    console.log(data);
     update();
-  }, [data]);
+  }, [data, widthScreen]);
 
   // if (!data.length) return <div>Loading bubbles...</div>;
 
   return (
     <div className="dataviz-bubble-graph">
       <svg ref={refSVGBubbleGraph} />
+      {!data.length ? <div>No data</div> : null}
     </div>
   );
 };

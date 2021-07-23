@@ -1,16 +1,15 @@
 module.exports = {
   purge: [],
   darkMode: false, // or 'media' or 'class'
-  theme: {
-
-    extend: {
-      colors: {
-        'black': '#3A3838',
-        'tacao': '#F49D85',
-        'gray': '#707070'
-      },
-    },
-  },
+  // theme: {
+  //   extend: {
+  //     colors: {
+  //       'black': '#3A3838',
+  //       'tacao': '#F49D85',
+  //       'gray': '#707070'
+  //     },
+  //   },
+  // },
   variants: {
     extend: {},
   },

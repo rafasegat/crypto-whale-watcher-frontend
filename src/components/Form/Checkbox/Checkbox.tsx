@@ -5,6 +5,7 @@ import React, { FC } from "react";
 
 type typeOption = {
   label: string;
+  description: string;
   value: string;
 };
 
@@ -62,7 +63,14 @@ const CheckboxGroup: FC<Props> = ({
               />
               <label htmlFor={checkboxId}>
                 <span className="fake-input"></span>
-                <span>{option.label}</span>
+                <div>
+                  <span>{option.label}</span>
+                  {option.description ? (
+                    <span className="block text-gray-400">
+                      {option.description}
+                    </span>
+                  ) : null}
+                </div>
               </label>
             </li>
           );

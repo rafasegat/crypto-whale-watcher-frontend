@@ -54,19 +54,16 @@ const Radio: FC<Props> = (props: Props) => {
   }, [value]);
 
   return (
-    <div className="datandis-radio" id={id}>
+    <div className="radio" id={id}>
       <label>{label}</label>
-      <div className={`datandis-radio-options direction-${displayDirection}`}>
+      <div className={`radio-options direction-${displayDirection}`}>
         {getOptions(options).map((option) => {
           const isOptionChecked = checkedOption.value === option.value;
           return (
-            <div
-              key={`${id}-${option.value}`}
-              className="datandis-radio-option"
-            >
+            <div key={`${id}-${option.value}`} className="radio-option">
               <input
                 type="radio"
-                id={`datandis-radio-opt-${option.value}`}
+                id={`radio-opt-${option.value}`}
                 value={option.value}
                 checked={isOptionChecked}
                 onChange={(event) => {
@@ -78,7 +75,7 @@ const Radio: FC<Props> = (props: Props) => {
                   setLocalValue(newValue);
                 }}
               />
-              <label htmlFor={`datandis-radio-opt-${option.value}`}>
+              <label htmlFor={`radio-opt-${option.value}`}>
                 {option.label}
               </label>
             </div>
