@@ -5,9 +5,9 @@ import Column from "../Layout/Column";
 const Footer: FC = () => {
   return (
     <footer className="text-center py-10">
-      <Row alignItemsCenter>
+      {/* <Row alignItemsCenter>
         <Column>Footer</Column>
-      </Row>
+      </Row> */}
     </footer>
   );
 };

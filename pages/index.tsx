@@ -63,7 +63,6 @@ export default function Home() {
 
   // Sizing
   const [widthScreen, setWidthScreen] = useState(600);
-  // const [heightScreen, setHeightScreen] = useState(600);
 
   // Filters
   const [symbolSelected, setSymbolSelected] = useState<string>("btc");
@@ -96,7 +95,6 @@ export default function Home() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function () {
           setWidthScreen(window.innerWidth);
-          // setHeightScreen(window.innerHeight);
         }, 300);
       };
       window.addEventListener("resize", handleResize);
@@ -107,7 +105,6 @@ export default function Home() {
     };
     if (typeof window !== "undefined") {
       setWidthScreen(window.innerWidth);
-      // setHeightScreen(window.innerHeight);
       handleResizeEvent();
     }
   });
@@ -161,7 +158,7 @@ export default function Home() {
       <Header />
       <main className="h-screen">
         <Container isFull>
-          <Row className="mt-5">
+          <Row className="mt-5 flex-wrap md:flex-nowrap">
             <Column size="w-full md:w-60 md:flex-none">
               <Filters
                 symbolSelected={symbolSelected}
