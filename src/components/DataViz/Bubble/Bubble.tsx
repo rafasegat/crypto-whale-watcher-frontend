@@ -17,6 +17,15 @@ const formatDate = (timestamp) => {
   }).replace("about", "");
 };
 
+const bubbleColors = {
+  green: "#136F63",
+  yellow: "E0CA3c",
+  red: "#F34213",
+  purple: "#3E2F5b",
+  black: "#000F08",
+  pink: "#F487B6",
+};
+
 const Bubble: FC<Props> = ({ id, data }: Props) => {
   const refSVGBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
@@ -88,6 +97,20 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
 
     // Add a scale for bubble size
     const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 20]);
+
+    const getBubbleColor = (type: string, withOpacity: boolean) => {
+      if (type === "unknown_to_exchange")
+        return bubbleColors.red + (withOpacity ? "66" : "");
+      if (type === "exchange_to_unknown")
+        return bubbleColors.green + (withOpacity ? "66" : "");
+      if (type === "unknown_to_unknown")
+        return bubbleColors.purple + (withOpacity ? "66" : "");
+      if (type === "exchange_to_exchange")
+        return bubbleColors.yellow + (withOpacity ? "66" : "");
+      if (type === "unknown_to_other")
+        return bubbleColors.pink + (withOpacity ? "66" : "");
+      return bubbleColors.black + (withOpacity ? "66" : "");
+    };
 
     // -1- Create a tooltip div that is hidden by default:
     const tooltip = d3
@@ -164,7 +187,7 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
     // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
     const zoom = d3
       .zoom()
-      .scaleExtent([0.5, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
+      .scaleExtent([1, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
       .extent([
         [0, 0],
         [width, height],
@@ -195,20 +218,8 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         .attr("cy", (d: any) => y(parseFloat(d.amount)))
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
-        .style("fill", (d: any) => {
-          if (d.type === "exchange_to_exchange") return "#5BC0EB4d";
-          if (d.type === "unknown_to_exchange") return "#FDE74C4d";
-          if (d.type === "exchange_to_unknown") return "#9BC53D4d";
-          if (d.type === "unknown_to_wallet") return "#C3423F4d";
-          if (d.type === "unknown_to_unknown") return "#404E4D4d";
-        })
-        .style("stroke", (d: any) => {
-          if (d.type === "exchange_to_exchange") return "#5BC0EB";
-          if (d.type === "unknown_to_exchange") return "#FDE74C";
-          if (d.type === "exchange_to_unknown") return "#9BC53D";
-          if (d.type === "unknown_to_wallet") return "#C3423F";
-          if (d.type === "unknown_to_unknown") return "#404E4D";
-        })
+        .style("fill", (d: TypeTransaction) => getBubbleColor(d.type, true))
+        .style("stroke", (d: TypeTransaction) => getBubbleColor(d.type, false))
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip);
@@ -227,20 +238,8 @@ const Bubble: FC<Props> = ({ id, data }: Props) => {
         .duration(200)
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
-        .style("fill", (d: any) => {
-          if (d.type === "exchange_to_exchange") return "#5BC0EB4d";
-          if (d.type === "unknown_to_exchange") return "#FDE74C4d";
-          if (d.type === "exchange_to_unknown") return "#9BC53D4d";
-          if (d.type === "unknown_to_wallet") return "#C3423F4d";
-          if (d.type === "unknown_to_unknown") return "#404E4D4d";
-        })
-        .style("stroke", (d: any) => {
-          if (d.type === "exchange_to_exchange") return "#5BC0EB";
-          if (d.type === "unknown_to_exchange") return "#FDE74C";
-          if (d.type === "exchange_to_unknown") return "#9BC53D";
-          if (d.type === "unknown_to_wallet") return "#C3423F";
-          if (d.type === "unknown_to_unknown") return "#404E4D";
-        });
+        .style("fill", (d: any) => getBubbleColor(d.type, true))
+        .style("stroke", (d: any) => getBubbleColor(d.type, false));
 
       allBubbles.exit().remove();
     };

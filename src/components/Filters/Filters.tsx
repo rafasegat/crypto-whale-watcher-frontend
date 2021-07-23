@@ -7,6 +7,8 @@ type Props = {
   setSymbolSelected: (value: string) => void;
   typeSelected: string[];
   setTypeSelected: (value: string[]) => void;
+  periodSelected: string;
+  setPeriodSelected: (value: string) => void;
 };
 
 const Filters: FC<Props> = ({
@@ -14,10 +16,12 @@ const Filters: FC<Props> = ({
   setSymbolSelected,
   typeSelected,
   setTypeSelected,
+  periodSelected,
+  setPeriodSelected,
 }: Props) => {
   return (
     <div>
-      <h3 className="font-bold mb-5">Filters</h3>
+      {/* <h3 className="font-bold mb-5">Filters</h3> */}
       <div>
         <Radio
           id="symbol"
@@ -59,6 +63,22 @@ const Filters: FC<Props> = ({
             console.log(items);
             setTypeSelected(items);
           }}
+        />
+      </div>
+      <div>
+        <Radio
+          id="period"
+          label="Period"
+          value={periodSelected}
+          displayDirection="vertical"
+          options={[
+            { label: "1 Hour", value: "one_hour" },
+            { label: "4 Hours", value: "four_hours" },
+            { label: "1 Day", value: "one_day" },
+            { label: "1 Week", value: "one_week" },
+            { label: "1 Month", value: "one_month" },
+          ]}
+          onChange={(item: any) => setPeriodSelected(item.value)}
         />
       </div>
     </div>
