@@ -1,14 +1,14 @@
-.datandis-radio {
+.radio {
   display: flex;
   flex-direction: column;
   & > label {
-    @apply text-sm font-bold mb-4;
+    @apply text-sm font-bold mb-2;
   }
-  .datandis-radio-options {
+  .radio-options {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    .datandis-radio-option {
+    .radio-option {
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -37,15 +37,15 @@
         cursor: inherit;
       }
       label {
-        @apply text-sm;
+        @apply text-xs;
         padding-left: 8px;
         cursor: inherit;
       }
     }
     &.direction-vertical {
       flex-direction: column;
-      .datandis-radio-option {
-        margin-bottom: 8px;
+      .radio-option {
+        margin-bottom: 5px;
       }
     }
   }
