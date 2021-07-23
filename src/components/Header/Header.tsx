@@ -10,7 +10,7 @@ const Header: FC = () => {
     <header>
       <Container>
         <Row alignItemsCenter>
-          <Column size="w-1/3 ">
+          <Column size="w-1/3 my-2">
             <Logo />
           </Column>
           <Column size="w-2/3">

@@ -81,36 +81,45 @@ export default function Home() {
         <title>Watch The Whale - Whale Crypto Tracker</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {/* <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-DFVQZY68WF"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-DFVQZY68WF');
-        </script> */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=G-DFVQZY68WF`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-DFVQZY68WF', {
+              page_path: window.location.pathname,
+            });
+          `,
+          }}
+        />
       </Head>
       <Header />
       <main className="h-screen">
         <Container>
-          <Row className="eth-section">
+          <Row className="mt-10">
             <Column size="w-full md:w-1/6">
               <Filters
                 symbolSelected={symbolSelected}
                 setSymbolSelected={(value: string) => setSymbolSelected(value)}
                 typeSelected={typeSelected}
                 setTypeSelected={(value: string[]) => setTypeSelected(value)}
+                periodSelected={periodSelected}
+                setPeriodSelected={(value: string) => setPeriodSelected(value)}
               />
             </Column>
             <Column size="w-full md:w-5/6">
               <Bubble id="eth" data={filter()} />
+              <img
+                src="https://alternative.me/crypto/fear-and-greed-index.png"
+                alt="Latest Crypto Fear & Greed Index"
+              />
             </Column>
           </Row>
-          <img
-            src="https://alternative.me/crypto/fear-and-greed-index.png"
-            alt="Latest Crypto Fear & Greed Index"
-          />
         </Container>
       </main>
       <Footer />
