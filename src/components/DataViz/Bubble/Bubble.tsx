@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
+import isMobile from "ismobilejs";
 const d3 = require("d3");
 
 type Props = {
@@ -33,8 +34,13 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
   // component did mount, initialize svg
   useEffect(() => {
     // set the dimensions and margins of the graph
-    const margin = { top: 10, right: 20, bottom: 100, left: 80 },
-      width = widthScreen - 280 - margin.left - margin.right,
+    const margin = {
+        top: 10,
+        right: 20,
+        bottom: 100,
+        left: isMobile ? 40 : 80,
+      },
+      width = widthScreen - (isMobile ? 20 : 280) - margin.left - margin.right,
       height = 685 - margin.top - margin.bottom;
 
     // create SVG
@@ -63,13 +69,18 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
 
     setSvg(elSVG);
   }, []);
-
+  console.log(widthScreen);
   useEffect(() => {
     if (!svg || typeof svg === "undefined") return;
 
     // set the dimensions and margins of the graph
-    const margin = { top: 10, right: 20, bottom: 100, left: 80 },
-      width = widthScreen - 280 - margin.left - margin.right,
+    const margin = {
+        top: 10,
+        right: 20,
+        bottom: 100,
+        left: isMobile ? 40 : 80,
+      },
+      width = widthScreen - (isMobile ? 20 : 280) - margin.left - margin.right,
       height = 685 - margin.top - margin.bottom;
 
     // resize width
