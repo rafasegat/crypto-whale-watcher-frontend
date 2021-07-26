@@ -172,7 +172,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         transaction.from_owner_type === "exchange" ? ` (${from_owner})` : ""
       }</span> → <span class="capitalize">${transaction.to_owner_type.replace(
         "unknown",
-        "wallet"
+        "unknown wallet"
       )}${
         transaction.to_owner_type === "exchange" ? `(${to_owner})` : ""
       }</span>`;
