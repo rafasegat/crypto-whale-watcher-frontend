@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { isMobile } from "react-device-detect";
 const d3 = require("d3");
 
@@ -7,6 +7,10 @@ type Props = {
   id: string;
   data: TypeTransaction[];
   widthScreen: number;
+};
+
+const readifyDate = (timestamp) => {
+  return format(timestamp * 1000, "p dd MMM yyyy");
 };
 
 const formatDate = (timestamp) => {
@@ -204,9 +208,15 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
           <span>${to_address}</span>
         </div>
       </div>
-      <div class="text-xs italic text-right">${formatDate(
+      <div class="mb-2">
+        <div class="font-bold text-xs">Hash:</div>
+        <div>
+          <span>${transaction.hash.substring(0, 30)}...</span>
+        </div>
+      </div>
+      <div class="text-xs italic text-right">${readifyDate(
         transaction.timestamp
-      )} ago</div>`;
+      )} - ${formatDate(transaction.timestamp)} ago</div>`;
 
       tooltip
         .style("opacity", 1)
@@ -216,7 +226,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
     };
     const moveTooltip = function (event, d: TypeTransaction) {
       tooltip
-        .style("left", event.x - 10 + "px")
+        .style("left", event.x - 280 + "px")
         .style("top", event.y + 30 + "px");
     };
     const hideTooltip = function () {
