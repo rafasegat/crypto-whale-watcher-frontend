@@ -22,7 +22,7 @@ const Filters: FC<Props> = ({
   return (
     <div>
       {/* <h3 className="font-bold mb-5">Filters</h3> */}
-      <div className="mb-2 pb-2 border-b border-gray-200">
+      <div className="mb-2 pb-2 border-b border-gray-100">
         <Radio
           id="symbol"
           label="Currency"
@@ -31,13 +31,13 @@ const Filters: FC<Props> = ({
           options={[
             { label: "Bitcoin", value: "btc" },
             { label: "Ethereum", value: "eth" },
-            { label: "Others", value: "others" },
+            { label: "Others (MATIC, XRP, UNI, etc)", value: "others" },
             { label: "USD", value: "usd" },
           ]}
           onChange={(item: any) => setSymbolSelected(item.value)}
         />
       </div>
-      <div className="mb-2 pb-2 border-b border-gray-200">
+      <div className="mb-2 pb-2 border-b border-gray-100">
         <Checkbox
           id="symbol"
           label="Symbol"

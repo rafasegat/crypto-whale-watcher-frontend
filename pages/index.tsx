@@ -1,12 +1,13 @@
 import Head from "next/head";
 import React, { useState } from "react";
-import Header from "../src/components/Header/Header";
-import Footer from "../src/components/Footer/Footer";
-import Column from "../src/components/Layout/Column";
-import Container from "../src/components/Layout/Container";
-import Row from "../src/components/Layout/Row";
+import Header from "components/Header/Header";
+import Footer from "components/Footer/Footer";
+import Column from "components/Layout/Column";
+import Container from "components/Layout/Container";
+import Row from "components/Layout/Row";
 import Filters from "components/Filters/Filters";
 import Bubble from "components/DataViz/Bubble/Bubble";
+import Loading from "components/Loading/Loading";
 import { getTransactions } from "rest/endpoints";
 
 declare global {
@@ -60,7 +61,7 @@ export default function Home() {
     TypeTransaction[]
   >([]);
   const [usdTransactions, setUsdTransactions] = useState<TypeTransaction[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   // Sizing
   const [widthScreen, setWidthScreen] = useState(600);
 
@@ -75,7 +76,10 @@ export default function Home() {
   useState(() => {
     getTransactions(
       { symbol: "btc", period: getTimestamp(periodSelected || "one_day") },
-      (data: TypeTransaction[]) => setBtcTransactions(data)
+      (data: TypeTransaction[]) => {
+        setIsLoading(false);
+        setBtcTransactions(data);
+      }
     );
     getTransactions(
       { symbol: "eth", period: getTimestamp(periodSelected || "one_day") },
@@ -118,6 +122,7 @@ export default function Home() {
       usd: usdTransactions,
     };
     const timestampPeriodSelected = getTimestamp(periodSelected);
+    console.log(typeSelected);
     return symbolData[symbolSelected].filter((transaction) => {
       const filteredData =
         // type transaction
@@ -156,30 +161,40 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main className="h-screen">
-        <Container isFull>
-          <Row className="mt-5 flex-wrap md:flex-nowrap">
-            <Column size="w-full md:w-60 md:flex-none">
-              <Filters
-                symbolSelected={symbolSelected}
-                setSymbolSelected={(value: string) => setSymbolSelected(value)}
-                typeSelected={typeSelected}
-                setTypeSelected={(value: string[]) => setTypeSelected(value)}
-                periodSelected={periodSelected}
-                setPeriodSelected={(value: string) => setPeriodSelected(value)}
-              />
-            </Column>
-            <Column size="w-full">
-              <Bubble id="eth" data={filterData()} widthScreen={widthScreen} />
-              <img
-                src="https://alternative.me/crypto/fear-and-greed-index.png"
-                alt="Latest Crypto Fear & Greed Index"
-              />
-            </Column>
-          </Row>
-        </Container>
+      <main style={{ height: isLoading ? "calc(100vh - 200px)" : "" }}>
+        {isLoading ? (
+          <div className="flex h-full items-center justify-center">
+            <Loading />
+          </div>
+        ) : (
+          <Container isFull>
+            <Row className="flex-wrap md:flex-nowrap">
+              <Column size="w-full md:w-60 md:flex-none">
+                <Filters
+                  symbolSelected={symbolSelected}
+                  setSymbolSelected={(value: string) =>
+                    setSymbolSelected(value)
+                  }
+                  typeSelected={typeSelected}
+                  setTypeSelected={(value: string[]) => setTypeSelected(value)}
+                  periodSelected={periodSelected}
+                  setPeriodSelected={(value: string) =>
+                    setPeriodSelected(value)
+                  }
+                />
+              </Column>
+              <Column size="w-full">
+                <Bubble
+                  id="bubble"
+                  data={filterData()}
+                  widthScreen={widthScreen}
+                />
+              </Column>
+            </Row>
+          </Container>
+        )}
       </main>
-      <Footer />
+      {isLoading ? null : <Footer />}
     </>
   );
 }

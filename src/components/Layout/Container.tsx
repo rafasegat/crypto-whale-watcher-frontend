@@ -16,8 +16,8 @@ const Container: FC<Props> = ({ children, className, isFull }: Props) => {
   return (
     <div
       className={`${
-        isFull ? "container-full" : "container"
-      } mx-auto px-4 ${className}`}
+        isFull ? "container-full" : "container mx-auto"
+      }  px-4 ${className}`}
     >
       {children}
     </div>

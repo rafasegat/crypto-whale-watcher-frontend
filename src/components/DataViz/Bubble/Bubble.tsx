@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
-import isMobile from "ismobilejs";
+import { isMobile } from "react-device-detect";
 const d3 = require("d3");
 
 type Props = {
@@ -18,12 +18,19 @@ const formatDate = (timestamp) => {
     .replace(" hours", "h");
 };
 
+const numberWithCommas = (x) => {
+  return x
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    .replace(".00", "");
+};
+
 const bubbleColors = {
-  green: "#136F63",
-  yellow: "E0CA3c",
-  red: "#F34213",
-  purple: "#3E2F5b",
-  black: "#000F08",
+  green: "#97CC04",
+  yellow: "#FBB13C",
+  red: "#B80C09",
+  purple: "#BEE3DB",
+  black: "#B7245C",
   pink: "#F487B6",
 };
 
@@ -41,7 +48,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         left: isMobile ? 40 : 80,
       },
       width = widthScreen - (isMobile ? 20 : 280) - margin.left - margin.right,
-      height = 685 - margin.top - margin.bottom;
+      height = isMobile ? 400 : 685 - margin.top - margin.bottom;
 
     // create SVG
     const elSVG = d3
@@ -69,7 +76,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
 
     setSvg(elSVG);
   }, []);
-  console.log(widthScreen);
+
   useEffect(() => {
     if (!svg || typeof svg === "undefined") return;
 
@@ -81,7 +88,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         left: isMobile ? 40 : 80,
       },
       width = widthScreen - (isMobile ? 20 : 280) - margin.left - margin.right,
-      height = 685 - margin.top - margin.bottom;
+      height = isMobile ? 400 : 685 - margin.top - margin.bottom;
 
     // resize width
     svg
@@ -138,30 +145,69 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
       .append("div")
       .style("opacity", 0)
       .attr("class", "bubble-graph-tooltip")
-      .style("background-color", "black")
-      .style("border-radius", "5px")
-      .style("padding", "10px")
       .style("color", "white");
 
     // -2- Create 3 functions to show / update (when mouse move but stay on same circle) / hide the tooltip
     const showTooltip = (event: any, transaction: TypeTransaction) => {
       tooltip.transition().duration(200);
-      const html = `Blockchain: ${transaction.blockchain.toUpperCase()} <br>
-                    Symbol: ${transaction.symbol.toUpperCase()} <br>
-                    Amount: ${transaction.amount}${transaction.symbol} - ${
-        transaction.amount_usd
-      }USD <br>
-                    From: ${transaction.from_address} ${
+
+      const amount = `${numberWithCommas(
+        transaction.amount
+      )}${transaction.symbol.toUpperCase()}`;
+      const amount_usd = `${numberWithCommas(transaction.amount_usd)}USD`;
+      const from_owner = `${
         transaction.from_owner_type === "exchange"
           ? transaction.from_owner
           : transaction.from_owner_type
-      }<br>
-      To: ${transaction.to_address} ${
+      }`;
+      const to_owner = `${
         transaction.to_owner_type === "exchange"
           ? transaction.to_owner
           : transaction.to_owner_type
-      }<br>
-                    ${formatDate(transaction.timestamp)}<br>`;
+      }`;
+      const type = `<span class="capitalize">${transaction.from_owner_type.replace(
+        "unknown",
+        "unknown wallet"
+      )}${
+        transaction.from_owner_type === "exchange" ? ` (${from_owner})` : ""
+      }</span> → <span class="capitalize">${transaction.to_owner_type.replace(
+        "unknown",
+        "wallet"
+      )}${
+        transaction.to_owner_type === "exchange" ? `(${to_owner})` : ""
+      }</span>`;
+      const from_address =
+        transaction.from_address === "Multiple Addresses"
+          ? transaction.from_address
+          : `${transaction.from_address.substring(0, 30)}...`;
+
+      const to_address =
+        transaction.to_address === "Multiple Addresses"
+          ? transaction.to_address
+          : `${transaction.to_address.substring(0, 30)}...`;
+
+      const html = `
+      <div class="block mb-1 pb-2 border-b border-white ">${type}</div>
+      <div class="mb-2 pb-1 border-b border-white">
+        <span class="text-base font-bold">${amount}</span>
+        <span class="text-xs font-"> / ${amount_usd}</span>
+      </div>
+      <div class="mb-2">
+        <div class="font-bold text-xs">From:</div>
+        <div>
+          <span>${from_address}</span>
+        </div>
+      </div>
+      <div class="mb-2">
+        <div class="font-bold text-xs">To:</div>
+        <div>
+          <span>${to_address}</span>
+        </div>
+      </div>
+      <div class="text-xs italic text-right">${formatDate(
+        transaction.timestamp
+      )} ago</div>`;
+
       tooltip
         .style("opacity", 1)
         .style("visibility", "visible")
@@ -170,8 +216,8 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
     };
     const moveTooltip = function (event, d: TypeTransaction) {
       tooltip
-        .style("left", event.x + 50 + "px")
-        .style("top", event.y + 50 + "px");
+        .style("left", event.x - 10 + "px")
+        .style("top", event.y + 30 + "px");
     };
     const hideTooltip = function () {
       tooltip
@@ -229,8 +275,8 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
       var scatter = svg.select(".scatter").attr("clip-path", "url(#clip)");
 
       const allBubbles = scatter.selectAll("circle").data(data);
-      // Enter new bubbles
 
+      // Enter new bubbles
       allBubbles
         .enter()
         .append("circle")
@@ -238,10 +284,11 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         .attr("cy", (d: any) => y(parseFloat(d.amount)))
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
-        .style("fill", (d: TypeTransaction) => getBubbleColor(d.type, true))
-        .style("stroke", (d: TypeTransaction) => getBubbleColor(d.type, false))
+        .style("fill", (d: TypeTransaction) => getBubbleColor(d.type, false))
+        .style("stroke", (d: TypeTransaction) => "#333333") // getBubbleColor(d.type, false))
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
+        .on("click", moveTooltip)
         .on("mouseleave", hideTooltip);
 
       allBubbles
@@ -258,8 +305,8 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         .duration(200)
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
-        .style("fill", (d: any) => getBubbleColor(d.type, true))
-        .style("stroke", (d: any) => getBubbleColor(d.type, false));
+        .style("fill", (d: any) => getBubbleColor(d.type, false))
+        .style("stroke", (d: any) => "#333333"); // getBubbleColor(d.type, false));
 
       allBubbles.exit().remove();
     };
@@ -271,7 +318,6 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
   return (
     <div className="dataviz-bubble-graph">
       <svg ref={refSVGBubbleGraph} />
-      {!data.length ? <div>No data</div> : null}
     </div>
   );
 };
