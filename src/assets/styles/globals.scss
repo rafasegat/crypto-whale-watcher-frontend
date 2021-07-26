@@ -7,7 +7,9 @@
 @import "components/DataViz/Bubble/Bubble.scss";
 @import "components/Form/Radio/Radio.scss";
 @import "components/Form/Checkbox/Checkbox.scss";
+@import "components/Loading/Loading.scss";
 
 body {
-  @apply text-gray-900;
+  background: #333333;
+  @apply text-white;
 }

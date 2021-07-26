@@ -12,15 +12,18 @@
     }
   }
   .bubbles:hover {
-    stroke: black;
+    stroke: white;
   }
   .svg-injected {
-    overflow: hidden;
+    // overflow: hidden;
   }
 }
 
 .bubble-graph-tooltip {
-  position: absolute;
+  @apply absolute text-white text-sm rounded-sm p-2;
   width: 300px;
-  font-size: 12px;
+  background-color: #333333;
+  background: #333333;
+  border: 1px solid #d4d2d5;
+  box-shadow: 0 2px 12px 0 rgb(F F F / 10%);
 }

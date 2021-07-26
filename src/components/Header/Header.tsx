@@ -8,9 +8,9 @@ import Menu from "../Menu/Menu";
 const Header: FC = () => {
   return (
     <header>
-      <Container>
+      <Container isFull>
         <Row alignItemsCenter>
-          <Column size="w-1/3 my-2">
+          <Column size="w-1/3 my-4">
             <Logo />
           </Column>
           <Column size="w-2/3">

@@ -30,7 +30,7 @@
       }
       input[type="checkbox"]:checked + label .fake-input {
         &:before {
-          background: orange;
+          background: #f45d01;
         }
         svg {
           opacity: 1;
@@ -50,8 +50,8 @@
           top: 4px;
           width: 20px;
           height: 20px;
-          border: 1px solid #ccc;
-          background: #ffffff;
+          border: 1px solid #fff;
+          background: #333333;
           margin-right: 10px;
           display: flex;
           justify-content: center;
