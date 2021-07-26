@@ -174,7 +174,7 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
         "unknown",
         "unknown wallet"
       )}${
-        transaction.to_owner_type === "exchange" ? `(${to_owner})` : ""
+        transaction.to_owner_type === "exchange" ? ` (${to_owner})` : ""
       }</span>`;
       const from_address =
         transaction.from_address === "Multiple Addresses"
