@@ -39,8 +39,8 @@ const Filters: FC<Props> = ({
       </div>
       <div className="mb-2 pb-2 border-b border-gray-100">
         <Checkbox
-          id="symbol"
-          label="Symbol"
+          id="transaction"
+          label="Transaction"
           value={typeSelected}
           options={[
             {
@@ -66,12 +66,12 @@ const Filters: FC<Props> = ({
               value: "exchange_to_exchange",
             },
             {
-              label: "Unknown → Other",
+              label: "Wallet → Other",
               description: "",
               value: "unknown_to_other",
             },
             {
-              label: "Other → Unknown",
+              label: "Other → Wallet",
               description: "",
               value: "other_to_unknown",
             },
