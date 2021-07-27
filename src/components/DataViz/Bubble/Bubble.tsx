@@ -7,6 +7,8 @@ type Props = {
   id: string;
   data: TypeTransaction[];
   widthScreen: number;
+  symbolSelected: string;
+  typeSelected: string[];
 };
 
 const readifyDate = (timestamp) => {
@@ -21,6 +23,39 @@ const formatDate = (timestamp) => {
     .replace("about", "")
     .replace(" hours", "h");
 };
+
+const optionsType = [
+  {
+    label: "Wallet → Exchange",
+    color: "red",
+    value: "unknown_to_exchange",
+  },
+  {
+    label: "Exchange → Wallet",
+    color: "green",
+    value: "exchange_to_unknown",
+  },
+  {
+    label: "Wallet → Wallet",
+    color: "purple",
+    value: "unknown_to_unknown",
+  },
+  {
+    label: "Exchange → Exchange",
+    color: "yellow",
+    value: "exchange_to_exchange",
+  },
+  {
+    label: "Wallet → Other",
+    color: "pink",
+    value: "unknown_to_other",
+  },
+  {
+    label: "Other → Wallet",
+    color: "black",
+    value: "other_to_unknown",
+  },
+];
 
 const numberWithCommas = (x) => {
   return x
@@ -38,7 +73,13 @@ const bubbleColors = {
   pink: "#F487B6",
 };
 
-const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
+const Bubble: FC<Props> = ({
+  id,
+  data,
+  widthScreen,
+  symbolSelected,
+  typeSelected,
+}: Props) => {
   const refSVGBubbleGraph = useRef();
   const [svg, setSvg] = useState<any>(null);
 
@@ -63,8 +104,11 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
     elSVG.append("rect").attr("class", "rect-overlay");
-    elSVG.append("g").attr("class", "x-axis");
-    elSVG.append("g").attr("class", "y-axis");
+    elSVG.append("g").attr("class", "x-axis-lines");
+    elSVG.append("text").attr("class", "x-axis-legend");
+    elSVG.append("g").attr("class", "y-axis-lines");
+    elSVG.append("text").attr("class", "y-axis-legend");
+
     elSVG.append("g").attr("class", "scatter");
 
     // Add a clipPath: everything out of this area won't be drawn.
@@ -108,26 +152,72 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
       parseFloat(t.amount)
     );
 
+    //////////////////
     // Add X axis
+    /////////////////
     const x = d3.scaleTime().domain([dateMin, dateMax]).range([0, width]);
-    const xAxis = svg
-      .select(".x-axis")
+    svg
+      .select(".x-axis-lines")
       .attr("transform", `translate(0, ${height})`)
       .call(
         d3
           .axisBottom(x)
           .tickFormat((timestamp: number) => formatDate(timestamp))
-      );
-    // Add Y axis
+          .tickSize(-height * 1.3)
+        // .ticks(12)
+      )
+      .select(".domain")
+      .remove();
+    // Add X axis label:
+    svg
+      .select(".x-axis-legend")
+      .attr("x", width / 2)
+      .attr("y", height + margin.top + 30)
+      .style("fill", "#FFF")
+      .text("PERIOD");
+
+    //////////////////
+    // Y axis
+    //////////////////
     const y = d3
       .scaleLinear()
       .domain([amountMin, amountMax])
       .range([height, 0]);
+    // Y legend
+    // svg
+    //   .select(".y-axis-legend")
+    //   .attr("text-anchor", "end")
+    //   .attr("transform", "rotate(-90)")
+    //   .attr(
+    //     "y",
+    //     -margin.left / 2 - (["btc", "eth"].includes(symbolSelected) ? 10 : 25)
+    //   )
+    //   .attr("x", -margin.top + 10);
+    // .text(`AMOUNT OF ${symbolSelected.toUpperCase()}`);
+    // Y lines
+    svg
+      .select(".y-axis-lines")
+      .call(
+        d3
+          .axisLeft(y)
+          .tickFormat(
+            (amount: number) =>
+              `${numberWithCommas(amount)}${
+                ["btc", "usd", "eth"].includes(symbolSelected)
+                  ? symbolSelected.toUpperCase()
+                  : ""
+              }`
+          )
+          .tickSize(-width * 1.6)
+        // .ticks(10)
+      )
+      .select(".domain")
+      .remove();
 
-    const yAxis = svg.select(".y-axis").call(d3.axisLeft(y));
+    svg.selectAll(".tick line").attr("stroke", "#ffffff5c");
 
     // Add a scale for bubble size
-    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([4, 20]);
+    const z = d3.scaleLinear().domain([amountMin, amountMax]).range([5, 30]);
 
     const getBubbleColor = (type: string, withOpacity: boolean) => {
       if (type === "unknown_to_exchange")
@@ -240,35 +330,35 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
 
     // A function that updates the chart when the
     // user zoom and thus new boundaries are available
-    const updateChart = (event: any) => {
-      // recover the new scale
-      var newX = event.transform.rescaleX(x);
-      var newY = event.transform.rescaleY(y);
+    // const updateChart = (event: any) => {
+    //   // recover the new scale
+    //   var newX = event.transform.rescaleX(x);
+    //   var newY = event.transform.rescaleY(y);
 
-      // update axes with these new boundaries
-      xAxis.call(
-        d3
-          .axisBottom(newX)
-          .tickFormat((timestamp: number) => formatDate(timestamp))
-      );
-      yAxis.call(d3.axisLeft(newY));
+    //   // update axes with these new boundaries
+    //   xAxis.call(
+    //     d3
+    //       .axisBottom(newX)
+    //       .tickFormat((timestamp: number) => formatDate(timestamp))
+    //   );
+    //   yAxis.call(d3.axisLeft(newY));
 
-      // update circle position
-      svg
-        .selectAll("circle")
-        .attr("cx", (d: TypeTransaction) => newX(d.timestamp))
-        .attr("cy", (d: TypeTransaction) => newY(parseFloat(d.amount)));
-    };
+    //   // update circle position
+    //   svg
+    //     .selectAll("circle")
+    //     .attr("cx", (d: TypeTransaction) => newX(d.timestamp))
+    //     .attr("cy", (d: TypeTransaction) => newY(parseFloat(d.amount)));
+    // };
 
-    // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
-    const zoom = d3
-      .zoom()
-      .scaleExtent([1, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
-      .extent([
-        [0, 0],
-        [width, height],
-      ])
-      .on("zoom", updateChart);
+    // // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
+    // const zoom = d3
+    //   .zoom()
+    //   .scaleExtent([1, 20]) // This control how much you can unzoom (x0.5) and zoom (x20)
+    //   .extent([
+    //     [0, 0],
+    //     [width, height],
+    //   ])
+    //   .on("zoom", updateChart);
 
     // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
     svg
@@ -276,13 +366,13 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
       .attr("width", width)
       .attr("height", height)
       .style("fill", "none")
-      .style("pointer-events", "all")
-      // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(zoom);
+      .style("pointer-events", "all");
+    // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    // .call(zoom);
 
     const update = () => {
       // Create the scatter variable: where both the circles and the brush take place
-      var scatter = svg.select(".scatter").attr("clip-path", "url(#clip)");
+      var scatter = svg.select(".scatter"); //.attr("clip-path", "url(#clip)");
 
       const allBubbles = scatter.selectAll("circle").data(data);
 
@@ -327,6 +417,20 @@ const Bubble: FC<Props> = ({ id, data, widthScreen }: Props) => {
 
   return (
     <div className="dataviz-bubble-graph">
+      <ul className="flex text-xs w-full justify-end mb-2">
+        {typeSelected.map((item) => {
+          const option = optionsType.find((option) => option.value === item);
+          return (
+            <li className="flex items-center mr-2">
+              <span
+                className="w-3 h-3 rounded-full mr-2"
+                style={{ background: bubbleColors[option.color] }}
+              />
+              <span>{option.label}</span>
+            </li>
+          );
+        })}
+      </ul>
       <svg ref={refSVGBubbleGraph} />
     </div>
   );

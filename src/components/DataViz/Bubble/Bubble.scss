@@ -1,21 +1,23 @@
 .dataviz-bubble-graph {
   position: relative;
-  cursor: grab;
+  overflow: visible;
   .bubbles {
     stroke-width: 2px;
     stroke: white;
   }
   circle.bubble {
-    cursor: pointer;
+    // cursor: pointer;
     &:hover {
-      stroke: red;
     }
   }
   .bubbles:hover {
     stroke: white;
   }
-  .svg-injected {
-    // overflow: hidden;
+  .x-axis-legend,
+  .y-axis-legend {
+    fill: #ffffff;
+    font: normal 16px sans-serif;
+    letter-spacing: 2px;
   }
 }
 

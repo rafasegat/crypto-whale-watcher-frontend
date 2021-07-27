@@ -122,7 +122,6 @@ export default function Home() {
       usd: usdTransactions,
     };
     const timestampPeriodSelected = getTimestamp(periodSelected);
-    console.log(typeSelected);
     return symbolData[symbolSelected].filter((transaction) => {
       const filteredData =
         // type transaction
@@ -188,6 +187,8 @@ export default function Home() {
                   id="bubble"
                   data={filterData()}
                   widthScreen={widthScreen}
+                  symbolSelected={symbolSelected}
+                  typeSelected={typeSelected}
                 />
               </Column>
             </Row>
