@@ -3,26 +3,54 @@ import Radio from "components/Form/Radio/Radio";
 import Checkbox from "components/Form/Checkbox/Checkbox";
 
 type Props = {
+  data: TypeTransaction[];
   symbolSelected: string;
   setSymbolSelected: (value: string) => void;
+  othersSymbolSelected: string[];
+  setOthersSymbolSelected: (value: string[]) => void;
   typeSelected: string[];
   setTypeSelected: (value: string[]) => void;
   periodSelected: string;
   setPeriodSelected: (value: string) => void;
 };
 
+const groupBy = (xs, key) => {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
+
 const Filters: FC<Props> = ({
+  data,
   symbolSelected,
   setSymbolSelected,
+  othersSymbolSelected,
+  setOthersSymbolSelected,
   typeSelected,
   setTypeSelected,
   periodSelected,
   setPeriodSelected,
 }: Props) => {
+  let othersSymbolOptions = [];
+  if (symbolSelected === "others") {
+    const dataGrouped = groupBy(data, "symbol");
+    for (const property in dataGrouped) {
+      othersSymbolOptions.push({
+        label: `${property.toUpperCase()} (${dataGrouped[property].length})`,
+        value: property.toUpperCase(),
+        count: dataGrouped[property].length,
+      });
+    }
+    othersSymbolOptions.sort((a, b) => {
+      if (a.count > b.count) return -1;
+      if (a.count < b.count) return 1;
+    });
+  }
   return (
     <div>
       {/* <h3 className="font-bold mb-5">Filters</h3> */}
-      <div className="mb-2 pb-2 border-b border-gray-100">
+      <div className="mb-3 pb-3 border-b border-gray-100">
         <Radio
           id="symbol"
           label="Currency"
@@ -37,6 +65,23 @@ const Filters: FC<Props> = ({
           onChange={(item: any) => setSymbolSelected(item.value)}
         />
       </div>
+
+      {symbolSelected === "others" ? (
+        <div className="mb-2 pb-2 border-b border-gray-100">
+          <Checkbox
+            id="other-currencies"
+            label={`Other Currencies${
+              othersSymbolSelected.length ? "" : " (showing all)"
+            }`}
+            value={othersSymbolSelected}
+            options={othersSymbolOptions}
+            onChange={(items: string[]) => {
+              setOthersSymbolSelected(items);
+            }}
+          />
+        </div>
+      ) : null}
+
       <div className="mb-2 pb-2 border-b border-gray-100">
         <Checkbox
           id="transaction"
@@ -81,6 +126,7 @@ const Filters: FC<Props> = ({
           }}
         />
       </div>
+
       <div className="mb-2 pb-2 border-b border-gray-200">
         <Radio
           id="period"

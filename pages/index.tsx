@@ -67,6 +67,9 @@ export default function Home() {
 
   // Filters
   const [symbolSelected, setSymbolSelected] = useState<string>("btc");
+  const [othersSymbolSelected, setOthersSymbolSelected] = useState<string[]>(
+    []
+  );
   const [typeSelected, setTypeSelected] = useState<string[]>([
     "unknown_to_exchange",
     "exchange_to_unknown",
@@ -113,7 +116,7 @@ export default function Home() {
     }
   });
 
-  const filterData = () => {
+  const filterData = ({ removeFilter }) => {
     if (!symbolSelected) return;
     const symbolData = {
       btc: btcTransactions,
@@ -122,6 +125,7 @@ export default function Home() {
       usd: usdTransactions,
     };
     const timestampPeriodSelected = getTimestamp(periodSelected);
+    console.log(othersSymbolSelected);
     return symbolData[symbolSelected].filter((transaction) => {
       const filteredData =
         // type transaction
@@ -131,10 +135,23 @@ export default function Home() {
         // period
         (periodSelected
           ? transaction.timestamp > timestampPeriodSelected
+          : true) &&
+        // others filtering
+        (symbolSelected === "others" &&
+        removeFilter !== "others" &&
+        othersSymbolSelected.length
+          ? othersSymbolSelected.includes(transaction.symbol.toUpperCase())
           : true);
       return filteredData;
     });
   };
+
+  const dataFiltered = filterData({
+    removeFilter: "",
+  });
+  const dataFilteredWithoutOthers = filterData({
+    removeFilter: "others",
+  });
 
   return (
     <>
@@ -170,9 +187,14 @@ export default function Home() {
             <Row className="flex-wrap md:flex-nowrap">
               <Column size="w-full md:w-60 md:flex-none">
                 <Filters
+                  data={dataFilteredWithoutOthers}
                   symbolSelected={symbolSelected}
                   setSymbolSelected={(value: string) =>
                     setSymbolSelected(value)
+                  }
+                  othersSymbolSelected={othersSymbolSelected}
+                  setOthersSymbolSelected={(value: string[]) =>
+                    setOthersSymbolSelected(value)
                   }
                   typeSelected={typeSelected}
                   setTypeSelected={(value: string[]) => setTypeSelected(value)}
@@ -185,7 +207,7 @@ export default function Home() {
               <Column size="w-full">
                 <Bubble
                   id="bubble"
-                  data={filterData()}
+                  data={dataFiltered}
                   widthScreen={widthScreen}
                   symbolSelected={symbolSelected}
                   typeSelected={typeSelected}
