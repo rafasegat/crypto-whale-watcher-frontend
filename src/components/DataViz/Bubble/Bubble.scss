@@ -1,17 +1,12 @@
 .dataviz-bubble-graph {
   position: relative;
   overflow: visible;
-  .bubbles {
-    stroke-width: 2px;
-    stroke: white;
-  }
   circle.bubble {
     // cursor: pointer;
     &:hover {
+      // opacity: 0.8;
+      stroke: white;
     }
-  }
-  .bubbles:hover {
-    stroke: white;
   }
   .x-axis-legend,
   .y-axis-legend {
@@ -19,13 +14,25 @@
     font: normal 16px sans-serif;
     letter-spacing: 2px;
   }
+  &.no-data {
+    .dataviz-bubble-graph-core {
+      display: none;
+    }
+    .no-data-message {
+      display: block;
+      height: 650px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  }
 }
 
-.bubble-graph-tooltip {
-  @apply absolute text-white text-sm rounded-sm p-2;
-  width: 300px;
+.d3-tip-lib-node {
+  @apply text-white text-sm rounded-sm p-2;
+  width: 320px;
   background-color: #333333;
   background: #333333;
   border: 1px solid #d4d2d5;
-  box-shadow: 0 2px 12px 0 rgb(F F F / 10%);
 }

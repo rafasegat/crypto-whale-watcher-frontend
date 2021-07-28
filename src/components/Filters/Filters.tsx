@@ -48,7 +48,7 @@ const Filters: FC<Props> = ({
     });
   }
   return (
-    <div>
+    <div className="mt-5">
       {/* <h3 className="font-bold mb-5">Filters</h3> */}
       <div className="mb-3 pb-3 border-b border-gray-100">
         <Radio
@@ -91,13 +91,13 @@ const Filters: FC<Props> = ({
             {
               label: "Wallet → Exchange",
               description:
-                "It usually means the person wants to sell it. Dump is coming. :(",
+                "It means the whale wants to sell it. Possibly, dump is coming. However, for USD is a positive signal, whales could possibly buying more.",
               value: "unknown_to_exchange",
             },
             {
               label: "Exchange → Wallet",
               description:
-                "It usually means the person bought and wants to hold it.",
+                "It means the whale already bought and wants to hold it.",
               value: "exchange_to_unknown",
             },
             {
