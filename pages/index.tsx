@@ -125,7 +125,6 @@ export default function Home() {
       usd: usdTransactions,
     };
     const timestampPeriodSelected = getTimestamp(periodSelected);
-    console.log(othersSymbolSelected);
     return symbolData[symbolSelected].filter((transaction) => {
       const filteredData =
         // type transaction

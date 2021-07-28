@@ -18,7 +18,7 @@ const readifyDate = (timestamp) => {
 const formatDate = (timestamp) => {
   return formatDistanceToNow(timestamp * 1000, {
     includeSeconds: true,
-    addSuffix: false,
+    addSuffix: true,
   })
     .replace("about", "")
     .replace(" hours", "h");
@@ -156,7 +156,7 @@ const Bubble: FC<Props> = ({
     // Add X axis
     /////////////////
     const x = d3.scaleTime().domain([dateMin, dateMax]).range([0, width]);
-    svg
+    const xAxis = svg
       .select(".x-axis-lines")
       .attr("transform", `translate(0, ${height})`)
       .call(
@@ -165,9 +165,14 @@ const Bubble: FC<Props> = ({
           .tickFormat((timestamp: number) => formatDate(timestamp))
           .tickSize(-height * 1.3)
         // .ticks(12)
-      )
-      .select(".domain")
-      .remove();
+      );
+    xAxis
+      .selectAll("text")
+      // .style("text-anchor", "end")
+      .attr("dx", "-4em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)");
+    xAxis.select(".domain").remove();
     // Add X axis label:
     svg
       .select(".x-axis-legend")
@@ -183,18 +188,6 @@ const Bubble: FC<Props> = ({
       .scaleLinear()
       .domain([amountMin, amountMax])
       .range([height, 0]);
-    // Y legend
-    // svg
-    //   .select(".y-axis-legend")
-    //   .attr("text-anchor", "end")
-    //   .attr("transform", "rotate(-90)")
-    //   .attr(
-    //     "y",
-    //     -margin.left / 2 - (["btc", "eth"].includes(symbolSelected) ? 10 : 25)
-    //   )
-    //   .attr("x", -margin.top + 10);
-    // .text(`AMOUNT OF ${symbolSelected.toUpperCase()}`);
-    // Y lines
     svg
       .select(".y-axis-lines")
       .call(
@@ -205,7 +198,7 @@ const Bubble: FC<Props> = ({
               `${numberWithCommas(amount)}${
                 ["btc", "usd", "eth"].includes(symbolSelected)
                   ? symbolSelected.toUpperCase()
-                  : ""
+                  : "USD"
               }`
           )
           .tickSize(-width * 1.6)
@@ -381,7 +374,15 @@ const Bubble: FC<Props> = ({
         .enter()
         .append("circle")
         .attr("cx", (d: any) => x(d.timestamp))
-        .attr("cy", (d: any) => y(parseFloat(d.amount)))
+        .attr("cy", (d: any) =>
+          y(
+            parseFloat(
+              ["btc", "usd", "eth"].includes(symbolSelected)
+                ? d.amount
+                : d.amount_usd
+            )
+          )
+        )
         .attr("r", (d: any) => z(parseFloat(d.amount)))
         .attr("class", "bubble")
         .style("fill", (d: TypeTransaction) => getBubbleColor(d.type, false))
