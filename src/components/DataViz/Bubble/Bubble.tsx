@@ -24,6 +24,27 @@ const formatDate = (timestamp) => {
     .replace(" hours", "h");
 };
 
+const symbols = [
+  { value: 1, symbol: "" },
+  { value: 1e3, symbol: "k" },
+  { value: 1e6, symbol: "M" },
+  { value: 1e9, symbol: "G" },
+  { value: 1e12, symbol: "T" },
+  { value: 1e15, symbol: "P" },
+  { value: 1e18, symbol: "E" },
+];
+
+function numberFormatter(num) {
+  const numToCheck = Math.abs(num);
+  for (let i = symbols.length - 1; i >= 0; i--) {
+    if (numToCheck >= symbols[i].value) {
+      const newNumber = (num / symbols[i].value).toFixed(0);
+      return `${newNumber}${symbols[i].symbol}`;
+    }
+  }
+  return "0";
+}
+
 const optionsType = [
   {
     label: "Wallet → Exchange",
@@ -105,9 +126,9 @@ const Bubble: FC<Props> = ({
       .attr("transform", `translate(${margin.left},${margin.top})`);
     elSVG.append("rect").attr("class", "rect-overlay");
     elSVG.append("g").attr("class", "x-axis-lines");
-    elSVG.append("text").attr("class", "x-axis-legend");
+    // elSVG.append("text").attr("class", "x-axis-legend");
     elSVG.append("g").attr("class", "y-axis-lines");
-    elSVG.append("text").attr("class", "y-axis-legend");
+    // elSVG.append("text").attr("class", "y-axis-legend");
 
     elSVG.append("g").attr("class", "scatter");
 
@@ -174,12 +195,12 @@ const Bubble: FC<Props> = ({
       .attr("transform", "rotate(-65)");
     xAxis.select(".domain").remove();
     // Add X axis label:
-    svg
-      .select(".x-axis-legend")
-      .attr("x", width / 2)
-      .attr("y", height + margin.top + 30)
-      .style("fill", "#FFF")
-      .text("PERIOD");
+    // svg
+    //   .select(".x-axis-legend")
+    //   .attr("x", width / 2)
+    //   .attr("y", height + margin.top + 30)
+    //   .style("fill", "#FFF")
+    //   .text("PERIOD");
 
     //////////////////
     // Y axis
@@ -193,13 +214,10 @@ const Bubble: FC<Props> = ({
       .call(
         d3
           .axisLeft(y)
-          .tickFormat(
-            (amount: number) =>
-              `${numberWithCommas(amount)}${
-                ["btc", "usd", "eth"].includes(symbolSelected)
-                  ? symbolSelected.toUpperCase()
-                  : "USD"
-              }`
+          .tickFormat((amount: number) =>
+            ["btc", "usd", "eth"].includes(symbolSelected)
+              ? `${numberFormatter(amount)} ${symbolSelected.toUpperCase()}`
+              : `${numberFormatter(amount)} USD`
           )
           .tickSize(-width * 1.6)
         // .ticks(10)
@@ -422,7 +440,7 @@ const Bubble: FC<Props> = ({
         {typeSelected.map((item) => {
           const option = optionsType.find((option) => option.value === item);
           return (
-            <li className="flex items-center mr-2">
+            <li className="flex items-center mr-3">
               <span
                 className="w-3 h-3 rounded-full mr-2"
                 style={{ background: bubbleColors[option.color] }}
