@@ -247,7 +247,8 @@ const Bubble: FC<Props> = ({
     // Tooltip
     const tip = d3tip()
       .attr("class", "d3-tip")
-      .offset([-10, 0])
+      .direction("s")
+      // .offset([-10, 0])
       .html(function (event, transaction: TypeTransaction) {
         console.log(transaction);
         const amount = `${numberWithCommas(
@@ -345,21 +346,34 @@ const Bubble: FC<Props> = ({
         .style("fill", (d: TypeTransaction) => getBubbleColor(d.type, false))
         .style("stroke", (d: TypeTransaction) => "#333333") // getBubbleColor(d.type, false))
         .on("mouseover", (event, transaction) => {
-          d3.select(".d3-tip").transition().style("opacity", "1");
+          d3.select(".d3-tip")
+            .transition()
+            .style("opacity", "1")
+            .style("z-index", "1");
           // .style("visibility", "visible");
           tip.show(event, transaction);
         })
         .on("mouseout", () => {
-          d3.select(".d3-tip").transition().duration(500).style("opacity", "0");
-          // .style("visibility", "hidden");
+          d3.select(".d3-tip")
+            .transition()
+            .duration(200)
+            .style("opacity", "0")
+            .style("z-index", "-1");
         });
       d3.select(".d3-tip")
         .on("mouseover", () => {
-          d3.select(".d3-tip").transition().style("opacity", "1");
+          d3.select(".d3-tip")
+            .transition()
+            .style("opacity", "1")
+            .style("z-index", "1");
           // .style("visibility", "visible");
         })
         .on("mouseout", () => {
-          d3.select(".d3-tip").transition().duration(500).style("opacity", "0");
+          d3.select(".d3-tip")
+            .transition()
+            .duration(20)
+            .style("opacity", "0")
+            .style("z-index", "-1");
           // .style("visibility", "hidden");
         });
 
@@ -385,7 +399,7 @@ const Bubble: FC<Props> = ({
 
   return (
     <div
-      className={`dataviz-bubble-graph ${data.length ? "had-data" : "no-data"}`}
+      className={`dataviz-bubble-graph ${data.length ? "has-data" : "no-data"}`}
     >
       <div className="dataviz-bubble-graph-core">
         <ul className="flex text-xs w-full justify-end mb-2">

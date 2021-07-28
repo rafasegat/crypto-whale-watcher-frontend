@@ -27,6 +27,11 @@
       text-align: center;
     }
   }
+  &.has-data {
+    .no-data-message {
+      display: none;
+    }
+  }
 }
 
 .d3-tip-lib-node {
