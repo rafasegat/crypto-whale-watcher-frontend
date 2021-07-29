@@ -276,12 +276,14 @@ const Bubble: FC<Props> = ({
         )}${
           transaction.to_owner_type === "exchange" ? ` (${to_owner})` : ""
         }</span>`;
-        const from_address =
+        const from_address = transaction.from_address;
+        const from_address_zapi =
           transaction.from_address === "Multiple Addresses"
             ? transaction.from_address
             : transaction.from_address;
 
-        const to_address =
+        const to_address = transaction.to_address;
+        const to_address_zapi =
           transaction.to_address === "Multiple Addresses"
             ? transaction.to_address
             : transaction.to_address;

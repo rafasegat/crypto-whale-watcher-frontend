@@ -4,7 +4,7 @@ axios.defaults.baseURL = "https://crypto-whale-watcher-prod.herokuapp.com/";
 
 export const getTransactions = async (filter: TypeFilter, done: Function) => {
   const { data } = await axios.get(
-    `/transactions?symbol=${filter.symbol}&period${filter.period}`
+    `/transactions?symbol=${filter.symbol}&period=${filter.period}`
   );
   done(data.results);
 };
