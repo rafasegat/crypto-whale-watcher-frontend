@@ -32,7 +32,7 @@ declare global {
   };
   type TypeFilter = {
     symbol: string;
-    period: number;
+    period: string;
   };
 }
 
@@ -78,22 +78,22 @@ export default function Home() {
 
   useState(() => {
     getTransactions(
-      { symbol: "btc", period: getTimestamp(periodSelected || "one_day") },
+      { symbol: "btc", period: periodSelected },
       (data: TypeTransaction[]) => {
         setIsLoading(false);
         setBtcTransactions(data);
       }
     );
     getTransactions(
-      { symbol: "eth", period: getTimestamp(periodSelected || "one_day") },
+      { symbol: "eth", period: periodSelected },
       (data: TypeTransaction[]) => setEthTransactions(data)
     );
     getTransactions(
-      { symbol: "others", period: getTimestamp(periodSelected || "one_day") },
+      { symbol: "others", period: periodSelected },
       (data: TypeTransaction[]) => setOthersTransactions(data)
     );
     getTransactions(
-      { symbol: "usd", period: getTimestamp(periodSelected || "one_day") },
+      { symbol: "usd", period: periodSelected },
       (data: TypeTransaction[]) => setUsdTransactions(data)
     );
     const handleResizeEvent = () => {
@@ -124,6 +124,7 @@ export default function Home() {
       others: othersTransactions,
       usd: usdTransactions,
     };
+    if (typeof symbolData[symbolSelected] === "undefined") return;
     const timestampPeriodSelected = getTimestamp(periodSelected);
     return symbolData[symbolSelected].filter((transaction) => {
       const filteredData =

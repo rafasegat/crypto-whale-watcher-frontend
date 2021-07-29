@@ -149,7 +149,7 @@ const Bubble: FC<Props> = ({
 
   useEffect(() => {
     if (!svg || typeof svg === "undefined") return;
-
+    if (typeof data === "undefined" || !data.length) return;
     // set the dimensions and margins of the graph
     const margin = {
         top: 10,
@@ -401,14 +401,16 @@ const Bubble: FC<Props> = ({
 
   return (
     <div
-      className={`dataviz-bubble-graph ${data.length ? "has-data" : "no-data"}`}
+      className={`dataviz-bubble-graph ${
+        typeof data !== "undefined" && data.length ? "has-data" : "no-data"
+      }`}
     >
       <div className="dataviz-bubble-graph-core">
         <ul className="flex text-xs w-full justify-end mb-2">
           {typeSelected.map((item) => {
             const option = optionsType.find((option) => option.value === item);
             return (
-              <li className="flex items-center mr-3">
+              <li key={item} className="flex items-center mr-3">
                 <span
                   className="w-3 h-3 rounded-full mr-2"
                   style={{ background: bubbleColors[option.color] }}
