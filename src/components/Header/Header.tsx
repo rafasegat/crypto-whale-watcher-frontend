@@ -7,7 +7,7 @@ import Menu from "../Menu/Menu";
 
 const Header: FC = () => {
   return (
-    <header className="mb-10">
+    <header>
       <Container isFull>
         <Row alignItemsCenter>
           <Column size="w-1/3 my-4">

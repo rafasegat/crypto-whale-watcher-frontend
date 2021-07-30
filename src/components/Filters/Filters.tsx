@@ -138,7 +138,7 @@ const Filters: FC<Props> = ({
             { label: "4 Hours", value: "four_hours" },
             { label: "1 Day", value: "one_day" },
             { label: "1 Week", value: "one_week" },
-            { label: "1 Month", value: "one_month" },
+            // { label: "1 Month", value: "one_month" },
           ]}
           onChange={(item: any) => setPeriodSelected(item.value)}
         />

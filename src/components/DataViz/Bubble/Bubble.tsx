@@ -277,16 +277,16 @@ const Bubble: FC<Props> = ({
           transaction.to_owner_type === "exchange" ? ` (${to_owner})` : ""
         }</span>`;
         const from_address = transaction.from_address;
-        const from_address_zapi =
-          transaction.from_address === "Multiple Addresses"
-            ? transaction.from_address
-            : transaction.from_address;
+        // const from_address_zapi =
+        //   transaction.to_address === "Multiple Addresses"
+        //     ? ""
+        //     : `https://zapper.fi/account/${transaction.to_address}`;
 
         const to_address = transaction.to_address;
-        const to_address_zapi =
-          transaction.to_address === "Multiple Addresses"
-            ? transaction.to_address
-            : transaction.to_address;
+        // const to_address_zapi =
+        //   transaction.to_address === "Multiple Addresses"
+        //     ? ""
+        //     : `https://zapper.fi/account/${transaction.to_address}`;
 
         const html = `
         <div class="block mb-1 pb-2 border-b border-white ">${type}</div>

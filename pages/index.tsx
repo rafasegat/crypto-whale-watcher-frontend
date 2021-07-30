@@ -78,24 +78,25 @@ export default function Home() {
 
   useState(() => {
     getTransactions(
-      { symbol: "btc", period: periodSelected },
+      { symbol: "btc", period: "one_week" },
       (data: TypeTransaction[]) => {
         setIsLoading(false);
         setBtcTransactions(data);
       }
     );
     getTransactions(
-      { symbol: "eth", period: periodSelected },
+      { symbol: "eth", period: "one_week" },
       (data: TypeTransaction[]) => setEthTransactions(data)
     );
     getTransactions(
-      { symbol: "others", period: periodSelected },
+      { symbol: "others", period: "one_week" },
       (data: TypeTransaction[]) => setOthersTransactions(data)
     );
     getTransactions(
-      { symbol: "usd", period: periodSelected },
+      { symbol: "usd", period: "one_week" },
       (data: TypeTransaction[]) => setUsdTransactions(data)
     );
+
     const handleResizeEvent = () => {
       let resizeTimer;
       const handleResize = () => {
