@@ -84,18 +84,18 @@ export default function Home() {
         setBtcTransactions(data);
       }
     );
-    getTransactions(
-      { symbol: "eth", period: "one_week" },
-      (data: TypeTransaction[]) => setEthTransactions(data)
-    );
-    getTransactions(
-      { symbol: "others", period: "one_week" },
-      (data: TypeTransaction[]) => setOthersTransactions(data)
-    );
-    getTransactions(
-      { symbol: "usd", period: "one_week" },
-      (data: TypeTransaction[]) => setUsdTransactions(data)
-    );
+    // getTransactions(
+    //   { symbol: "eth", period: "one_week" },
+    //   (data: TypeTransaction[]) => setEthTransactions(data)
+    // );
+    // getTransactions(
+    //   { symbol: "others", period: "one_week" },
+    //   (data: TypeTransaction[]) => setOthersTransactions(data)
+    // );
+    // getTransactions(
+    //   { symbol: "usd", period: "one_week" },
+    //   (data: TypeTransaction[]) => setUsdTransactions(data)
+    // );
 
     const handleResizeEvent = () => {
       let resizeTimer;
