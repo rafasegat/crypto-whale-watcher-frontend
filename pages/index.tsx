@@ -77,25 +77,33 @@ export default function Home() {
   const [periodSelected, setPeriodSelected] = useState<string>("one_day");
 
   useState(() => {
-    getTransactions(
-      { symbol: "btc", period: "one_week" },
-      (data: TypeTransaction[]) => {
-        setIsLoading(false);
-        setBtcTransactions(data);
-      }
-    );
-    // getTransactions(
-    //   { symbol: "eth", period: "one_week" },
-    //   (data: TypeTransaction[]) => setEthTransactions(data)
-    // );
-    // getTransactions(
-    //   { symbol: "others", period: "one_week" },
-    //   (data: TypeTransaction[]) => setOthersTransactions(data)
-    // );
-    // getTransactions(
-    //   { symbol: "usd", period: "one_week" },
-    //   (data: TypeTransaction[]) => setUsdTransactions(data)
-    // );
+    // BTC
+    if (!btcTransactions.length)
+      getTransactions(
+        { symbol: "btc", period: "one_week" },
+        (data: TypeTransaction[]) => {
+          setIsLoading(false);
+          setBtcTransactions(data);
+        }
+      );
+    //ETH
+    if (!ethTransactions.length)
+      getTransactions(
+        { symbol: "eth", period: "one_week" },
+        (data: TypeTransaction[]) => setEthTransactions(data)
+      );
+    // Others
+    if (!othersTransactions.length)
+      getTransactions(
+        { symbol: "others", period: "one_week" },
+        (data: TypeTransaction[]) => setOthersTransactions(data)
+      );
+    // USD
+    if (!usdTransactions.length)
+      getTransactions(
+        { symbol: "usd", period: "one_week" },
+        (data: TypeTransaction[]) => setUsdTransactions(data)
+      );
 
     const handleResizeEvent = () => {
       let resizeTimer;
