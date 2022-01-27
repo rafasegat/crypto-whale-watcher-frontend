@@ -8,7 +8,16 @@ const Footer: FC = () => {
     <footer className="text-right py-5 font-sm">
       <Container isFull>
         <Row alignItemsCenter className="justify-end">
-          <Column>Developed by Raf</Column>
+          <Column>
+            Developed by{" "}
+            <a
+              className="hover:underline"
+              target="_blank"
+              href="http://rafaelsegat.com/"
+            >
+              Raf
+            </a>
+          </Column>
         </Row>
       </Container>
     </footer>
